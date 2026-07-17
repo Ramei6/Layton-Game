@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspector Dasha in Venice</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="game-wrapper">
+    <div id="game-container">
+
+      <!-- ══ TITLE SCREEN ══ -->
+      <div id="screen-title" class="screen">
+        <div id="title-characters">
+          <img id="char-gabriel-title" src="assets/characters/gabriel-fullbody-normal.png" alt="Gabriel">
+          <img id="char-dasha-title"   src="assets/characters/dasha-fullbody-normal.png"   alt="Dasha">
+        </div>
+        <div id="title-text">
+          <h1 id="title-main">The Adventures of Inspector Dasha<br>and Apprentice Gabriel</h1>
+          <h2 id="title-venice">in Venice</h2>
+        </div>
+        <div id="title-click-prompt" class="click-prompt">Click to continue</div>
+      </div>
+
+      <!-- ══ INTRO SCREEN ══ -->
+      <div id="screen-intro" class="screen">
+        <div id="intro-card">
+          <p id="intro-text"></p>
+        </div>
+        <div class="click-prompt">Click to continue</div>
+      </div>
+
+      <!-- ══ SCENE SCREEN (reused for all scenes) ══ -->
+      <div id="screen-scene" class="screen">
+        <img id="scene-background" src="" alt="">
+        <div id="scene-sprites"></div>
+        <div id="scene-hotspots"></div>
+        <div id="scene-location-tag"></div>
+      </div>
+
+      <!-- ══ PUZZLE SCREEN (reused for all puzzles) ══ -->
+      <div id="screen-puzzle" class="screen">
+        <div id="puzzle-header">
+          <span id="puzzle-number"></span>
+          <span id="puzzle-title-text"></span>
+        </div>
+        <div id="puzzle-body">
+          <div id="puzzle-left-panel">
+            <div id="puzzle-description"></div>
+            <div id="puzzle-hint-area">
+              <button id="puzzle-hint-btn">💡 Use Hint</button>
+              <div id="puzzle-hint-text" class="hidden"></div>
+            </div>
+          </div>
+          <div id="puzzle-right-panel">
+            <!-- Puzzle-specific UI injected here -->
+          </div>
+        </div>
+        <div id="puzzle-footer">
+          <button id="puzzle-submit-btn">Submit Answer</button>
+        </div>
+        <!-- Result overlay (shown on correct/wrong) -->
+        <div id="puzzle-result" class="hidden">
+          <div id="puzzle-result-inner">
+            <div id="puzzle-result-text"></div>
+            <button id="puzzle-result-btn">Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ END SCREEN ══ -->
+      <div id="screen-end" class="screen">
+        <div id="end-content">
+          <h1 id="end-title">Happy Birthday!</h1>
+          <div id="end-characters"></div>
+          <p id="end-message"></p>
+        </div>
+      </div>
+
+      <!-- ══ DIALOGUE OVERLAY (floats above all screens) ══ -->
+      <div id="dialogue-overlay">
+        <div id="dialogue-portrait-left"></div>
+        <div id="dialogue-box">
+          <div id="dialogue-speaker-name"></div>
+          <div id="dialogue-text-content"></div>
+          <div id="dialogue-advance-arrow">▼</div>
+          <div id="cat-companion" class="hidden">🐱</div>
+        </div>
+        <div id="dialogue-portrait-right"></div>
+      </div>
+
+      <!-- ══ HUD (hint coin counter, always on top) ══ -->
+      <div id="hud" class="hidden">
+        <div id="hint-coin-counter">
+          <div id="hintcoin-icon">🪙</div>
+          <span id="hint-count">0</span>
+        </div>
+      </div>
+
+    </div><!-- /game-container -->
+  </div><!-- /game-wrapper -->
+
+  <!-- GSAP (animation library) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Load order matters: dependencies first -->
+  <script src="js/state.js"></script>
+  <script src="js/scene-manager.js"></script>
+  <script src="js/dialogue.js"></script>
+  <script src="js/puzzle-shell.js"></script>
+
+  <!-- Puzzles (loaded before scenes because scenes call puzzle.open()) -->
+  <script src="js/puzzles/puzzle1-crossing.js"></script>
+  <script src="js/puzzles/puzzle2-pigeons.js"></script>
+  <script src="js/puzzles/puzzle3-map.js"></script>
+  <script src="js/puzzles/puzzle4-recipe.js"></script>
+
+  <!-- Scenes -->
+  <script src="js/scenes/scene-title.js"></script>
+  <script src="js/scenes/scene-intro.js"></script>
+  <script src="js/scenes/scene1-bridge.js"></script>
+  <script src="js/scenes/scene2-stmarco.js"></script>
+  <script src="js/scenes/scene3-restaurant.js"></script>
+  <script src="js/scenes/scene-end.js"></script>
+
+  <!-- Entry point: runs after all scripts loaded -->
+  <script src="js/game.js"></script>
+
+</body>
+</html>
