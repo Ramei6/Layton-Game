@@ -29,12 +29,12 @@ const Puzzle1Crossing = {
       description: `
         <p>The gondola can carry <strong>at most 2 people</strong> and needs <strong>at least 1</strong> to cross.</p>
         <br>
-        <p>The children must <em>never outnumber</em> the adults on either bank — or they'll panic!</p>
+        <p>If there are <strong>more children than adults</strong> on either bank, the children start crying and the adults lose control.</p>
         <br>
         <p><strong>Adults:</strong> Dasha 🕵️ &nbsp; Gabriel 🎓 &nbsp; Signora 👵</p>
         <p><strong>Children:</strong> Luca 👦 &nbsp; Sofia 👧 &nbsp; Marco 👦</p>
         <br>
-        <p>Get all six to the <strong>other bank</strong>!</p>
+        <p>Get all six to the <strong>other bank</strong> safely.</p>
       `,
       hints: [
         "You can leave children alone on a bank only if there are NO adults there at all.",
@@ -177,14 +177,22 @@ const Puzzle1Crossing = {
   _tokenClick(charId, location) {
     const { boat } = this._state;
     const currentBankKey = boat.side === 'A' ? 'bankA' : 'bankB';
+    const beforeState = JSON.parse(JSON.stringify(this._state));
 
     if (location === 'boat') {
-      // Disembark back to current bank
+      // Disembark back to current bank.
       boat.passengers = boat.passengers.filter(c => c !== charId);
       this._state[currentBankKey].push(charId);
 
+      if (!this._isValidState()) {
+        this._state = beforeState;
+        this._updateUI();
+        this._setStatus('That would leave the children overwhelmed!');
+        return;
+      }
+
     } else if (location === currentBankKey) {
-      // Board from current bank
+      // Board from current bank. The safety rule is checked when the boat actually crosses.
       if (boat.passengers.length >= 2) { this._setStatus('The gondola is full! (max 2)'); return; }
       this._state[currentBankKey] = this._state[currentBankKey].filter(c => c !== charId);
       boat.passengers.push(charId);
@@ -196,6 +204,10 @@ const Puzzle1Crossing = {
 
     this._updateUI();
     this._setStatus('');
+  },
+
+  _isValidState() {
+    return this._isValidBank(this._state.bankA) && this._isValidBank(this._state.bankB);
   },
 
   _cross() {
@@ -220,7 +232,7 @@ const Puzzle1Crossing = {
     if (!fromOk || !toOk) {
       if (!fromOk) { this._flashBank('bank-a-el'); }
       if (!toOk)   { this._flashBank('bank-b-el'); }
-      this._setStatus("⚠️ That would leave the children unguarded!");
+      this._setStatus("⚠️ That would leave the children overwhelmed!");
       return;
     }
 

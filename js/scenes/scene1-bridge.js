@@ -177,21 +177,23 @@ const Scene1Bridge = {
   // ── Called by Puzzle1 after solve ───────────────────────────────
 
   onPuzzleSolved() {
-    // Return to scene, group is gone, gondola becomes clickable
+    // Return to the scene screen and then play the farewell dialogue.
     GameState.gondolaUnlocked = true;
 
-    this._setupSprites();   // rebuilds without group, gondola now clickable
-    this._setupHotspots();
+    SceneManager.goTo('screen-scene', () => {
+      this._setupSprites();   // rebuilds without group, gondola now clickable
+      this._setupHotspots();
+      this._showLocationTag('Venice — Day 1');
 
-    // Collect remaining hint coins + farewell dialogue
-    DialogueEngine.start([
-      { character: 'Signora Rossi', portrait: 'lady', side: 'left',
-        text: "Mille grazie! You truly are remarkable detectives! Buona fortuna, my dears!" },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Enjoy the rest of your day, Signora." },
-    ], () => {
-      // Gondola pulse to draw attention
-      gsap.to('#sprite-gondola', { y: -14, duration: 0.4, repeat: 3, yoyo: true, ease: 'power1.inOut' });
+      DialogueEngine.start([
+        { character: 'Signora Rossi', portrait: 'lady', side: 'left',
+          text: "Mille grazie! You truly are remarkable detectives! Buona fortuna, my dears!" },
+        { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
+          text: "Enjoy the rest of your day, Signora." },
+      ], () => {
+        // Gondola pulse to draw attention
+        gsap.to('#sprite-gondola', { y: -14, duration: 0.4, repeat: 3, yoyo: true, ease: 'power1.inOut' });
+      });
     });
   },
 };
