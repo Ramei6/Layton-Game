@@ -483,12 +483,17 @@ body {
 ═══════════════════════════════ */
 #screen-end {
   background: linear-gradient(160deg, #0a0a1a, #1a0a2a);
-  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-#end-content { text-align: center; }
+#end-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
 
 #end-title {
   font-size: 72px;
