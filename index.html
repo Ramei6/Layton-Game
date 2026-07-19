@@ -14,26 +14,33 @@
     <div id="game-container">
 
       <!-- ══ TITLE SCREEN ══ -->
-<!-- ══ TITLE SCREEN ══ -->
-      <div id="screen-title" class="screen">
+  <!-- ══ TITLE SCREEN ══ -->
+        <div id="screen-title" class="screen">
 
-        <!-- PATH B ONLY: cover baked-in texts with patches matching background -->
-        <!-- Delete these two divs if you regenerated a clean image (Path A) -->
-        <div id="title-cover-subtitle"></div>
-        <div id="title-cover-press"></div>
+          <!-- PATH B ONLY: cover baked-in texts with patches matching background -->
+          <!-- Delete these two divs if you regenerated a clean image (Path A) -->
+          <div id="title-cover-subtitle"></div>
+          <div id="title-cover-press"></div>
 
-        <!-- Animated HTML subtitle overlay -->
-        <h1 id="title-subtitle" data-text="A trip in Venice">A trip in Venice</h1>
-        <div id="title-press-start">✦ PRESS START ✦</div>
+          <!-- Animated HTML subtitle overlay -->
+          <h1 id="title-subtitle" data-text="A trip in Venice">A trip in Venice</h1>
+          <div id="title-press-start">✦ PRESS START ✦</div>
 
-      </div>
-      <!-- ══ INTRO SCREEN ══ -->
-      <div id="screen-intro" class="screen">
-        <div id="intro-card">
-          <p id="intro-text"></p>
         </div>
-        <div class="click-prompt">Click to continue</div>
-      </div>
+        <!-- ══ INTRO SCREEN ══ -->
+        <div id="screen-intro" class="screen">
+
+          <!-- Background image, fades between scenes -->
+          <img id="intro-background" src="" alt="">
+
+          <!-- Narrator text overlay — sits at bottom, shown/hidden by JS -->
+          <div id="narrator-overlay">
+            <div id="narrator-label">— Narrator —</div>
+            <p id="narrator-text"></p>
+            <div id="narrator-advance">▼</div>
+          </div>
+
+        </div>
 
       <!-- ══ SCENE SCREEN (reused for all scenes) ══ -->
       <div id="screen-scene" class="screen">

@@ -105,31 +105,72 @@ body {
 }
 
 /* ═══════════════════════════════
-   INTRO (STORY CARDS) SCREEN
+   INTRO SCREEN
 ═══════════════════════════════ */
 #screen-intro {
-  background: radial-gradient(ellipse at center, #2a1a0a 0%, #120a04 100%);
-  display: none;
+  background: #08080f;
+}
+
+/* Background image fills the screen */
+#intro-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;   /* GSAP fades this in */
+}
+
+/* Narrator overlay — gradient bar rising from the bottom */
+#narrator-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 160px 52px 160px;
+
+  /* Dark gradient fades up into the image — cinematic feel */
+  background: linear-gradient(
+    to top,
+    rgba(4, 4, 12, 0.96) 0%,
+    rgba(4, 4, 12, 0.88) 55%,
+    rgba(4, 4, 12, 0.0)  100%
+  );
+
+  display: none;      /* toggled by JS */
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  gap: 10px;
   cursor: pointer;
-  padding: 80px;
+  opacity: 0;         /* GSAP animates this */
 }
 
-#intro-card {
-  background: rgba(0, 0, 0, 0.45);
-  border: 2px solid #8b6a14;
-  border-radius: 16px;
-  padding: 50px 70px;
-  max-width: 860px;
+#narrator-label {
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: rgba(200, 160, 32, 0.6);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+#narrator-text {
+  color: #f0e6cc;
+  font-size: 20px;
+  font-style: italic;
+  line-height: 1.9;
   text-align: center;
+  min-height: 72px;
+  text-shadow:
+    1px 1px 0px rgba(0,0,0,0.9),
+    0px 0px 12px rgba(0,0,0,0.6);
 }
 
-#intro-text {
-  color: #f5e6c0;
-  font-size: 24px;
-  line-height: 1.85;
+#narrator-advance {
+  color: rgba(200, 160, 32, 0.65);
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin-top: 6px;
+  animation: blink 1.8s ease-in-out infinite;
 }
 
 /* ═══════════════════════════════
