@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
   <title>Inspector Dasha in Venice</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -12,18 +14,19 @@
     <div id="game-container">
 
       <!-- ══ TITLE SCREEN ══ -->
+<!-- ══ TITLE SCREEN ══ -->
       <div id="screen-title" class="screen">
-        <div id="title-characters">
-          <img id="char-gabriel-title" src="assets/characters/gabriel-fullbody-normal.png" alt="Gabriel">
-          <img id="char-dasha-title"   src="assets/characters/dasha-fullbody-normal.png"   alt="Dasha">
-        </div>
-        <div id="title-text">
-          <h1 id="title-main">The Adventures of Inspector Dasha<br>and Apprentice Gabriel</h1>
-          <h2 id="title-venice">in Venice</h2>
-        </div>
-        <div id="title-click-prompt" class="click-prompt">Click to continue</div>
-      </div>
 
+        <!-- PATH B ONLY: cover baked-in texts with patches matching background -->
+        <!-- Delete these two divs if you regenerated a clean image (Path A) -->
+        <div id="title-cover-subtitle"></div>
+        <div id="title-cover-press"></div>
+
+        <!-- Animated HTML subtitle overlay -->
+        <h1 id="title-subtitle" data-text="A trip in Venice">A trip in Venice</h1>
+        <div id="title-press-start">✦ PRESS START ✦</div>
+
+      </div>
       <!-- ══ INTRO SCREEN ══ -->
       <div id="screen-intro" class="screen">
         <div id="intro-card">

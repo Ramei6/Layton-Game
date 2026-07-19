@@ -1,8 +1,8 @@
 /**
- * Title Screen
+ * Title Screen — uses title-bg.jpg as full background.
  *
- * Phase 0 → click → Phase 1: "in Venice" fades in, outfits swap to tourist
- * Phase 1 → click → game starts (scene-intro)
+ * Phase 0 → click → Phase 1: "A trip in Venice" fades in
+ * Phase 1 → click → Phase 2: PRESS START flashes, game starts
  */
 const SceneTitle = {
 
@@ -12,59 +12,74 @@ const SceneTitle = {
   init() {
     this._phase = 0;
 
-    // Reset character images to normal outfits
-    document.getElementById('char-gabriel-title').src = 'assets/characters/gabriel-fullbody-normal.png';
-    document.getElementById('char-dasha-title').src   = 'assets/characters/dasha-fullbody-normal.png';
-
-    // Hide "in Venice" immediately (opacity:0 set in CSS, but reset after possible re-visit)
-    gsap.set('#title-venice', { opacity: 0, y: 20 });
+    // Reset state in case of re-visit
+    gsap.set('#title-subtitle',    { opacity: 0, y: 18 });
+    gsap.set('#title-press-start', { opacity: 1, scale: 1 });
 
     SceneManager.goTo('screen-title', () => {
+      // Small entrance delay, then start the PRESS START pulse
+      gsap.delayedCall(0.5, () => this._startPulse('slow'));
 
-      // Characters slide in from sides
-      gsap.from('#char-gabriel-title', { x: -320, opacity: 0, duration: 0.9, delay: 0.2, ease: 'power2.out' });
-      gsap.from('#char-dasha-title',   { x:  320, opacity: 0, duration: 0.9, delay: 0.2, ease: 'power2.out' });
-
-      // Title drops down
-      gsap.from('#title-main', { y: -50, opacity: 0, duration: 0.8, delay: 0.7 });
-
-      // Attach click after animations settle
-      setTimeout(() => {
-        this._clickHandler = () => this._handleClick();
-        document.getElementById('screen-title').addEventListener('click', this._clickHandler);
-      }, 1500);
+      // Wire click after animations settle
+      gsap.delayedCall(0.8, () => {
+        this._clickHandler = (e) => this._handleClick(e);
+        document.getElementById('screen-title')
+          .addEventListener('click', this._clickHandler);
+      });
     });
   },
 
+  // ── Pulse helper ─────────────────────────────────────────────
+  _startPulse(speed) {
+    gsap.killTweensOf('#title-press-start');
+
+    const duration = speed === 'fast' ? 0.55 : 1.2;
+
+    gsap.to('#title-press-start', {
+      opacity: 0.65,
+      scale:   0.96,
+      duration,
+      repeat:  -1,
+      yoyo:    true,
+      ease:    'sine.inOut',
+    });
+  },
+
+  // ── Click handler ────────────────────────────────────────────
   _handleClick() {
+
     if (this._phase === 0) {
-      // ── Phase 0 → 1: reveal "in Venice" + swap outfits ──
+      // ── Phase 0 → 1: reveal subtitle ──
       this._phase = 1;
 
-      // "in Venice" appears
-      gsap.to('#title-venice', { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out' });
-
-      // Brief fade-out/in on characters to swap outfits
-      const gabImg   = document.getElementById('char-gabriel-title');
-      const dashaImg = document.getElementById('char-dasha-title');
-
-      gsap.to([gabImg, dashaImg], {
-        opacity: 0, duration: 0.3, delay: 0.2,
-        onComplete: () => {
-          gabImg.src   = 'assets/characters/gabriel-fullbody-tourist.png';
-          dashaImg.src = 'assets/characters/dasha-fullbody-tourist.png';
-          gsap.to([gabImg, dashaImg], { opacity: 1, duration: 0.4 });
-        }
+      gsap.to('#title-subtitle', {
+        opacity:  1,
+        y:        0,
+        duration: 0.75,
+        ease:     'power2.out',
       });
 
-      // Update click prompt text
-      document.querySelector('#screen-title .click-prompt').textContent = 'Click to play';
+      // Speed up the pulse slightly as a cue to click again
+      gsap.delayedCall(0.8, () => this._startPulse('fast'));
 
     } else if (this._phase === 1) {
-      // ── Phase 1 → start game ──
+      // ── Phase 1 → 2: flash then transition ──
       this._phase = 2;
-      document.getElementById('screen-title').removeEventListener('click', this._clickHandler);
-      SceneIntro.init();
+
+      document.getElementById('screen-title')
+        .removeEventListener('click', this._clickHandler);
+
+      gsap.killTweensOf('#title-press-start');
+
+      // Classic arcade "PRESS START accepted" flash
+      gsap.to('#title-press-start', {
+        opacity:  0,
+        duration: 0.12,
+        repeat:   5,
+        yoyo:     true,
+        ease:     'none',
+        onComplete: () => SceneIntro.init(),
+      });
     }
   },
 };
