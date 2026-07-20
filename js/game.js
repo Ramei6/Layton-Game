@@ -4,6 +4,7 @@
 window.addEventListener('load', () => {
   _resizeGame();
   window.addEventListener('resize', _resizeGame);
+  DebugMenu.init();   // ← add this
   SceneTitle.init();
 });
 

@@ -26,6 +26,7 @@ const DialogueEngine = {
 
   // Portraits that face left by default and need mirroring
   MIRRORED_PORTRAITS: new Set(['gabriel']),
+  NO_TALK_ANIM: new Set(['lady', 'kid']),  // portraits with idle-only assets
 
   start(lines, onComplete) {
     this._queue      = lines;
@@ -124,6 +125,7 @@ if (line.portrait) {
 
   _startTalkAnim(portraitName) {
     if (!portraitName) return;
+    if (this.NO_TALK_ANIM.has(portraitName)) return;  // ← skip animation
     if (this._talkTimer) clearInterval(this._talkTimer);
 
     let frame = true;

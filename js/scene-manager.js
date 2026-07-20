@@ -29,24 +29,25 @@ const SceneManager = {
 
   _doTransition(targetId, onComplete, bgSrc) {
     const target = document.getElementById(targetId);
-    if (!target) {
-      console.error('SceneManager: screen not found:', targetId);
-      return;
-    }
+    if (!target) { console.error('SceneManager: screen not found:', targetId); return; }
 
-    const hudScreens = ['screen-scene', 'screen-puzzle'];
-    const showHud    = hudScreens.includes(targetId);
+    const hudScreens  = ['screen-scene', 'screen-puzzle'];
+    const showHud     = hudScreens.includes(targetId);
+
+    // Screens that need display:flex to activate their column/center layouts
+    const flexScreens = ['screen-puzzle', 'screen-end'];
 
     const doShow = () => {
       this._activeId = targetId;
 
-      // Set background AFTER preload, right before fade-in — image is guaranteed ready
       if (bgSrc) {
         const bgEl = document.getElementById('scene-background');
         if (bgEl) bgEl.src = bgSrc;
       }
 
-      target.style.display = 'block';
+      // ← was always 'block' — now uses flex for screens that need it
+      target.style.display = flexScreens.includes(targetId) ? 'flex' : 'block';
+
       gsap.fromTo(target,
         { opacity: 0 },
         { opacity: 1, duration: 0.55, ease: 'power1.inOut',
@@ -63,7 +64,6 @@ const SceneManager = {
       }
     };
 
-    // Fade out current screen first, then show new one
     if (this._activeId && this._activeId !== targetId) {
       const current = document.getElementById(this._activeId);
       if (current) {
