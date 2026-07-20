@@ -14,14 +14,20 @@
 const Scene1Bridge = {
 
   init() {
-    document.getElementById('scene-background').src = 'assets/backgrounds/scene1-venice-bridge.jpg';
+    // Remove: document.getElementById('scene-background').src = '...'
+    // SceneManager now handles this after preload
 
-    SceneManager.goTo('screen-scene', () => {
-      this._setupSprites();
-      this._setupHotspots();
-      this._showLocationTag('Venice — Day 1');
-    });
+    SceneManager.goTo(
+      'screen-scene',
+      () => {
+        this._setupSprites();
+        this._setupHotspots();
+        this._showLocationTag('Venice — Day 1');
+      },
+      'assets/backgrounds/scene1-venice-bridge.jpg'  // ← third argument
+    );
   },
+
 
   _setupSprites() {
     const container = document.getElementById('scene-sprites');

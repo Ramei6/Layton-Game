@@ -18,10 +18,14 @@ const Scene3Restaurant = {
   },
 
   init() {
-    this._setBackground("La Tana di Oberix", "#8d5e2b", "#2a1408", "#5d2b14");
-    SceneManager.goTo('screen-scene', () => {
-      document.getElementById('scene-sprites').innerHTML = '';
-      document.getElementById('scene-hotspots').innerHTML = '';
-    });
+    SceneManager.goTo(
+      'screen-scene',
+      () => {
+        this._setupSprites();
+        this._setupHotspots();
+        this._showLocationTag('Mestre — La Tana di Oberix');
+      },
+      'assets/backgrounds/scene3-restaurant.jpg'
+    );
   },
 };

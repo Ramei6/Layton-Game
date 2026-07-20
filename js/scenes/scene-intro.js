@@ -129,24 +129,31 @@ const SceneIntro = {
 
   // ── Background crossfade ────────────────────────────────────────
   _changeBackground(src, onComplete) {
-    const bg        = document.getElementById('intro-background');
-    const firstLoad = !bg.getAttribute('data-loaded');
+  const bg = document.getElementById('intro-background');
 
-    if (firstLoad) {
+  // Preload new image first
+  const img = new Image();
+  img.onload = img.onerror = () => {
+
+    if (!bg.getAttribute('data-loaded')) {
+      // First background — just set and fade in
       bg.setAttribute('data-loaded', 'true');
       bg.src = src;
       gsap.to(bg, { opacity: 1, duration: 0.7, ease: 'power1.inOut', onComplete });
 
     } else {
+      // Subsequent backgrounds — crossfade
       gsap.to(bg, {
         opacity: 0, duration: 0.4, ease: 'power1.in',
         onComplete: () => {
-          bg.src = src;
+          bg.src = src;   // image already loaded — no flash
           gsap.to(bg, { opacity: 1, duration: 0.6, ease: 'power1.out', onComplete });
         }
       });
     }
-  },
+  };
+  img.src = src;
+},
 
   // ── Narrator card ───────────────────────────────────────────────
   _showNarrator(text) {

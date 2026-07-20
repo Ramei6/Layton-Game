@@ -17,12 +17,15 @@ const Scene2StMarco = {
   },
 
   init() {
-    this._setBackground("St Mark's Square", "#c79a3b", "#0f2b3e", "#195a7a");
-    SceneManager.goTo('screen-scene', () => {
-      document.getElementById('scene-sprites').innerHTML = '';
-      document.getElementById('scene-hotspots').innerHTML = '';
-      this._showLocationTag("St Mark's Square");
-    });
+    SceneManager.goTo(
+      'screen-scene',
+      () => {
+        this._setupSprites();
+        this._setupHotspots();
+        this._showLocationTag('Venice — Piazza San Marco');
+      },
+      'assets/backgrounds/scene2-stmarco.jpg'
+    );
   },
 
   _showLocationTag(text) {
@@ -45,19 +48,46 @@ const Scene2StMarco = {
   onMapSolved() {
     DialogueEngine.start([
       { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Mestre. Of course — just across the bridge. That's where we need to go." },
+        text: '"Mestre. Of course — just across the Ponte della Libertà."' },
       { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "La Tana di Oberix... do you know it?" },
+        text: '"La Tana di Oberix... do you know the place?"' },
       { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "I know we need to take the train. Come on." },
+        text: '"I know we need to take the train. Come on, Detective."' },
     ], () => {
-      SceneManager.goTo('screen-scene', () => {
-        this._setBackground("Journey to Mestre", "#4c3a2b", "#1b3248", "#5a7f90");
-        document.getElementById('scene-sprites').innerHTML = '';
-        document.getElementById('scene-hotspots').innerHTML = '';
 
-        setTimeout(() => Scene3Restaurant.init(), 3500);
-      });
+      // Clear sprites and hotspots first
+      document.getElementById('scene-sprites').innerHTML  = '';
+      document.getElementById('scene-hotspots').innerHTML = '';
+      document.getElementById('scene-location-tag').style.opacity = '0';
+
+      // Preload train background, THEN swap
+      const trainSrc = 'assets/backgrounds/transition-train.jpg';
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        const bgEl = document.getElementById('scene-background');
+        gsap.to(bgEl, {
+          opacity: 0, duration: 0.4,
+          onComplete: () => {
+            bgEl.src = trainSrc;
+            gsap.to(bgEl, { opacity: 1, duration: 0.5,
+              onComplete: () => {
+                // Train dialogue then proceed
+                setTimeout(() => {
+                  DialogueEngine.start([
+                    { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+                      text: '"I still cannot believe we are working on your birthday trip."' },
+                    { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
+                      text: '"We are not working. We are having an adventure. There is a difference."' },
+                  ], () => {
+                    setTimeout(() => Scene3Restaurant.init(), 1500);
+                  });
+                }, 800);
+              }
+            });
+          }
+        });
+      };
+      img.src = trainSrc;
     });
   },
 };
