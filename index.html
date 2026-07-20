@@ -124,6 +124,14 @@
         </div>
       </div>
 
+      <!-- ══ LOADING INDICATOR ══ -->
+      <div id="loading-indicator">
+        <div id="loading-sprite"></div>
+        <div id="loading-text">
+          Investigating<span class="dot" id="dot1">.</span><span
+          class="dot" id="dot2">.</span><span class="dot" id="dot3">.</span>
+        </div>
+      </div>
     </div><!-- /game-container -->
   </div><!-- /game-wrapper -->
 
@@ -133,7 +141,8 @@
   <!-- Load order matters: dependencies first -->
   <script src="js/state.js"></script>
   <script src="js/scene-manager.js"></script>
-  <script src="js/dialogue.js"></script>
+  <script src="js/dialogue.js"></script>^
+  <script src="js/loading-indicator.js"></script>
   <script src="js/puzzle-shell.js"></script>
 
   <!-- Puzzles (loaded before scenes because scenes call puzzle.open()) -->

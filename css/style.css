@@ -607,3 +607,71 @@ body {
    UTILITIES
 ═══════════════════════════════ */
 .hidden { display: none !important; }
+
+/* ═══════════════════════════════
+   LOADING INDICATOR
+═══════════════════════════════ */
+#loading-indicator {
+  position: absolute;
+  bottom: 22px;
+  right: 22px;   /* ← was left: 22px */
+  left: unset;   /* ← clears the previous left value */
+  z-index: 200;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Walking sprite ────────────────────────────── */
+#loading-sprite {
+  /* Displayed frame size — adjust scale here */
+  width:  90px;    /* 600px × 0.15 */
+  height: 107px;   /* 712px × 0.15 */
+
+  background-image: url('../assets/ui/loading-walk.png');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+
+  /* Scale the entire sheet proportionally */
+  background-size: 360px 107px;   /* 2400px × 0.15  ×  712px × 0.15 */
+
+  animation: loading-walk 0.55s steps(4) infinite;
+  flex-shrink: 0;
+
+  /* Remove transform entirely */
+}
+
+@keyframes loading-walk {
+  from { background-position:    0px 0; }
+  to   { background-position: -360px 0; }   /* 2400px × 0.15 */
+}
+
+/* ── "Investigating..." text ───────────────────── */
+#loading-text {
+  font-family: 'Playfair Display', 'Palatino Linotype', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: #f5e8cc;                              /* light — readable on any scene */
+  text-shadow:
+    1px 1px 0px rgba(0, 0, 0, 0.9),
+    0px 0px 8px rgba(0, 0, 0, 0.7);           /* dark halo keeps it legible */
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Three dots animate in staggered sequence */
+.dot {
+  display: inline-block;
+  animation: dot-pulse 1.2s ease-in-out infinite;
+  opacity: 0;
+}
+
+#dot1 { animation-delay: 0.0s; }
+#dot2 { animation-delay: 0.3s; }
+#dot3 { animation-delay: 0.6s; }
+
+@keyframes dot-pulse {
+  0%,  60%, 100% { opacity: 0; }
+  30%            { opacity: 1; }
+}

@@ -10,12 +10,17 @@ const SceneManager = {
    *                                only relevant for 'screen-scene'
    */
   goTo(targetId, onComplete, bgSrc) {
-
     if (bgSrc) {
-      // Preload image silently before starting any transition
+      // Show loading indicator while image preloads
+      LoadingIndicator.show();
+
       const img = new Image();
-      img.onload  = () => this._doTransition(targetId, onComplete, bgSrc);
-      img.onerror = () => this._doTransition(targetId, onComplete, bgSrc); // never block on error
+      img.onload = img.onerror = () => {
+        // Image ready — hide indicator, then start transition
+        LoadingIndicator.hide(() => {
+          this._doTransition(targetId, onComplete, bgSrc);
+        });
+      };
       img.src = bgSrc;
     } else {
       this._doTransition(targetId, onComplete, null);

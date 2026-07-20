@@ -66,25 +66,51 @@ const SceneIntro = {
 
   // ── Public entry point ──────────────────────────────────────────
   init() {
-    this._index           = 0;
-    this._narratorHandler = null;
+  this._index           = 0;
+  this._narratorHandler = null;
 
-    // Reset intro background
-    const bg = document.getElementById('intro-background');
-    bg.src = '';
-    bg.style.opacity = '0';
-    bg.removeAttribute('data-loaded');
+  // Collect all background srcs from the BEATS array upfront
+  const bgSrcs = this.BEATS
+    .filter(b => b.type === 'bg')
+    .map(b => b.src);
 
-    // Hide narrator overlay
-    const overlay = document.getElementById('narrator-overlay');
-    overlay.style.display  = 'none';
-    overlay.style.opacity  = '0';
-    document.getElementById('narrator-text').textContent = '';
+  // Reset background element
+  const bg = document.getElementById('intro-background');
+  bg.src = '';
+  bg.style.opacity = '0';
+  bg.removeAttribute('data-loaded');
 
-    SceneManager.goTo('screen-intro', () => {
-      this._processBeat();
-    });
-  },
+  // Hide narrator overlay
+  const overlay = document.getElementById('narrator-overlay');
+  overlay.style.display  = 'none';
+  overlay.style.opacity  = '0';
+  document.getElementById('narrator-text').textContent = '';
+
+  // Show loading indicator while all backgrounds preload in parallel
+  LoadingIndicator.show();
+
+  let loaded = 0;
+  const total = bgSrcs.length;
+
+  const onOneLoaded = () => {
+    loaded++;
+    if (loaded >= total) {
+      // All backgrounds ready — hide indicator then start sequence
+      LoadingIndicator.hide(() => {
+        SceneManager.goTo('screen-intro', () => {
+          this._processBeat();
+        });
+      });
+    }
+  };
+
+  bgSrcs.forEach(src => {
+    const img   = new Image();
+    img.onload  = onOneLoaded;
+    img.onerror = onOneLoaded; // never block on a missing asset
+    img.src     = src;
+  });
+},
 
   // ── Beat processor ──────────────────────────────────────────────
   _processBeat() {
@@ -129,31 +155,36 @@ const SceneIntro = {
 
   // ── Background crossfade ────────────────────────────────────────
   _changeBackground(src, onComplete) {
-  const bg = document.getElementById('intro-background');
+    const bg = document.getElementById('intro-background');
 
-  // Preload new image first
-  const img = new Image();
-  img.onload = img.onerror = () => {
+    // Show indicator while preloading
+    LoadingIndicator.show();
 
-    if (!bg.getAttribute('data-loaded')) {
-      // First background — just set and fade in
-      bg.setAttribute('data-loaded', 'true');
-      bg.src = src;
-      gsap.to(bg, { opacity: 1, duration: 0.7, ease: 'power1.inOut', onComplete });
+    const img = new Image();
+    img.onload = img.onerror = () => {
 
-    } else {
-      // Subsequent backgrounds — crossfade
-      gsap.to(bg, {
-        opacity: 0, duration: 0.4, ease: 'power1.in',
-        onComplete: () => {
-          bg.src = src;   // image already loaded — no flash
-          gsap.to(bg, { opacity: 1, duration: 0.6, ease: 'power1.out', onComplete });
+      // Image ready — hide indicator, then crossfade
+      LoadingIndicator.hide(() => {
+
+        if (!bg.getAttribute('data-loaded')) {
+          bg.setAttribute('data-loaded', 'true');
+          bg.src = src;
+          gsap.to(bg, { opacity: 1, duration: 0.7, ease: 'power1.inOut', onComplete });
+
+        } else {
+          gsap.to(bg, {
+            opacity: 0, duration: 0.4, ease: 'power1.in',
+            onComplete: () => {
+              bg.src = src;
+              gsap.to(bg, { opacity: 1, duration: 0.6, ease: 'power1.out', onComplete });
+            }
+          });
         }
+
       });
-    }
-  };
-  img.src = src;
-},
+    };
+    img.src = src;
+  },
 
   // ── Narrator card ───────────────────────────────────────────────
   _showNarrator(text) {
