@@ -89,16 +89,31 @@
         </div>
       </div>
 
-      <!-- ══ DIALOGUE OVERLAY (floats above all screens) ══ -->
+      <!-- ══ DIALOGUE OVERLAY ══ -->
       <div id="dialogue-overlay">
-        <div id="dialogue-portrait-left"></div>
-        <div id="dialogue-box">
-          <div id="dialogue-speaker-name"></div>
-          <div id="dialogue-text-content"></div>
-          <div id="dialogue-advance-arrow">▼</div>
-          <div id="cat-companion" class="hidden">🐱</div>
+
+        <!-- Portrait — bigger, above box top-left corner -->
+        <div id="dialogue-portrait-container">
+          <img id="dialogue-portrait-img" src="" alt="">
         </div>
-        <div id="dialogue-portrait-right"></div>
+
+        <!-- Parchment box -->
+        <div id="dialogue-box">
+
+          <!-- Name tab — child of box, floats above via negative top -->
+          <div id="dialogue-name-tab">
+            <span id="dialogue-speaker-name"></span>
+            <div id="cat-companion" class="hidden">🐱</div>
+          </div>
+
+          <!-- Content -->
+          <div id="dialogue-text-content"></div>
+
+          <!-- Pencil replaces ▼ -->
+          <img id="dialogue-advance-pencil" src="assets/ui/pencil-icon.png" alt="">
+
+        </div>
+
       </div>
 
       <!-- ══ HUD (hint coin counter, always on top) ══ -->

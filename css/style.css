@@ -275,85 +275,140 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 240px;
+  height: 250px;
   z-index: 100;
-  display: none;     /* shown by DialogueEngine */
-  align-items: flex-end;
+  display: none;        /* DialogueEngine sets to 'flex' */
   cursor: pointer;
+  overflow: visible;    /* allows portrait to extend above overlay */
 }
 
-#dialogue-portrait-left {
+/* ── Portrait — bigger, above the box top-left corner ─── */
+#dialogue-portrait-container {
   position: absolute;
-  left: 16px;
-  bottom: 8px;
-  width: 210px;
-  height: 240px;
-  display: flex;
-  align-items: flex-end;
+  left: 200px;          /* aligns with box left edge */
+  bottom: 152px;        /* clears above box + name tab */
+  width: 150px;         /* ↑ from 108px */
+  height: 165px;        /* ↑ from 116px */
+  z-index: 100;
+  display: none;
 }
 
-#dialogue-portrait-right {
-  position: absolute;
-  right: 16px;
-  bottom: 8px;
-  width: 210px;
-  height: 240px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
-#dialogue-portrait-left img,
-#dialogue-portrait-right img {
-  max-height: 240px;
-  width: auto;
+#dialogue-portrait-img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  display: block;
+  filter: drop-shadow(1px 4px 10px rgba(0, 0, 0, 0.85));
+  transition: opacity 0.1s ease;
 }
 
+#dialogue-portrait-img.mirrored {
+  transform: scaleX(-1);
+}
+
+/* ── Parchment dialogue box ──────────────────────────── */
 #dialogue-box {
   position: absolute;
-  left: 210px;
-  right: 210px;
+  left: 200px;
+  right: 200px;
   bottom: 10px;
-  background: rgba(14, 10, 4, 0.94);
-  border: 3px solid #c8a020;
+
+  /* Layered gradients simulate aged parchment */
+  background:
+    /* Vignette — slightly darker at edges */
+    radial-gradient(ellipse at center,
+      transparent 55%,
+      rgba(140, 95, 10, 0.13) 100%),
+    /* Warm highlight top-left — simulates paper grain */
+    radial-gradient(ellipse at 12% 15%,
+      rgba(255, 248, 200, 0.45) 0%,
+      transparent 55%),
+    /* Cooler shadow bottom-right */
+    radial-gradient(ellipse at 88% 85%,
+      rgba(180, 130, 30, 0.18) 0%,
+      transparent 50%),
+    /* Base parchment tone */
+    linear-gradient(170deg,
+      #f6e9b5 0%,
+      #eed89a 30%,
+      #f1e3ac 62%,
+      #e8d492 100%);
+
+  border: 3px solid #7a500a;
   border-radius: 14px;
-  padding: 18px 28px 28px 28px;
-  min-height: 150px;
+  box-shadow:
+    inset 0 0 45px rgba(180, 120, 0, 0.10),  /* inner warmth */
+    inset 0 2px 6px rgba(255, 240, 160, 0.25), /* top light edge */
+    0 6px 28px rgba(0, 0, 0, 0.60);           /* ground shadow */
+
+  padding: 18px 52px 26px 28px;  /* right padding leaves room for pencil */
+  min-height: 130px;
+  z-index: 101;
+  overflow: visible;             /* name tab sticks above */
+}
+
+/* ── Name tab — dark label above top-left of box ─────── */
+#dialogue-name-tab {
+  position: absolute;
+  top: -38px;
+  left: 0;              /* ← was 148px, now flush with box left edge */
+  height: 38px;
+  min-width: 160px;
+
+  background: #170f04;
+  border: 3px solid #7a500a;
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* ← centers the name horizontally */
+  gap: 8px;
+  z-index: 103;              /* ← was 1, now above portrait container (102) */
 }
 
 #dialogue-speaker-name {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: bold;
   color: #f0d060;
-  border-bottom: 1px solid rgba(200,160,32,0.35);
-  padding-bottom: 8px;
-  margin-bottom: 10px;
-}
-
-#dialogue-text-content {
-  font-size: 20px;
-  line-height: 1.65;
-  color: #f5e8cc;
-  min-height: 60px;
-}
-
-#dialogue-advance-arrow {
-  position: absolute;
-  bottom: 10px;
-  right: 18px;
-  color: #c8a020;
-  font-size: 16px;
-  animation: blink 1.2s ease-in-out infinite;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
 }
 
 #cat-companion {
-  position: absolute;
-  bottom: 10px;
-  left: 16px;
-  font-size: 18px;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
+/* ── Dialogue text — dark ink on parchment ───────────── */
+#dialogue-text-content {
+  color: #1a0e04;         /* dark sepia ink — replaces the old #f5e8cc */
+  font-size: 20px;
+  line-height: 1.70;
+  min-height: 60px;
+}
+
+#dialogue-advance-pencil {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  width: 32px;      /* scale down from the 64px source */
+  height: 32px;
+  object-fit: contain;
+  transform-origin: bottom right;
+  animation: pencil-tap 1.6s ease-in-out infinite;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+@keyframes pencil-tap {
+  0%   { transform: translateY(0px)  rotate(-20deg); opacity: 0.70; }
+  35%  { transform: translateY(-8px) rotate(-13deg); opacity: 1.00; }
+  55%  { transform: translateY(-8px) rotate(-13deg); opacity: 1.00; }
+  90%  { transform: translateY(0px)  rotate(-20deg); opacity: 0.70; }
+  100% { transform: translateY(0px)  rotate(-20deg); opacity: 0.70; }
+}
 /* ═══════════════════════════════
    PUZZLE SCREEN
 ═══════════════════════════════ */
