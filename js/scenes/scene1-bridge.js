@@ -247,7 +247,7 @@ const Scene1Bridge = {
       () => {
         this._setupZones();
         this._setupHotspots();
-        this._showLocationTag('Venice — Day 1');
+        this._showLocationTag('Venice — Outside the Train Station');
 
         DialogueEngine.start([
           { character: 'Signora Rossi',   portrait: 'lady',  side: 'left',
