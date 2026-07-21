@@ -1,1281 +1,1176 @@
+```text
 # ============================================================
-# CONTEXT PROMPT — Inspector Dasha in Venice
-# Handoff document for AI coding agent
-# Last updated: 2026-07-17
+# INSPECTOR DASHA IN VENICE — COMPLETE PROJECT HANDOFF
+# Generated: 2026-07-17
+# Purpose: Full context for AI agent continuation
+# CRITICAL: Read every section before writing a single line of code.
 # ============================================================
+
+# ════════════════════════════════════════════════════════════
+# SECTION 0 — HOW TO USE THIS DOCUMENT
+# ════════════════════════════════════════════════════════════
+
+This is a birthday gift game being built by Gabriel for his girlfriend
+Dasha. Deadline is Tuesday 2026-07-22 night. The game is a Professor
+Layton-style point-and-click puzzle adventure.
+
+When the user asks you to change something:
+- Make SURGICAL changes only. Never rewrite a full file unless
+  explicitly asked.
+- Always say which file and which method/block changes.
+- Never invent coordinates — the user measures them with a calibration
+  tool and provides them to you.
+- Never use emoji in game assets or UI (pencil icon is a PNG asset).
+- All displayed location names use Italian/proper names (Piazza San
+  Marco, NOT St Mark's Square).
 
 # ════════════════════════════════════════════════════════════
 # SECTION 1 — PROJECT OVERVIEW
 # ════════════════════════════════════════════════════════════
 
-## What this is
-A browser-based point-and-click puzzle game built as a birthday gift.
-It is a love letter to the Professor Layton game series, personalised
-with real names, real places (Venice + Mestre, Italy), and inside jokes.
-
-The recipient is the developer's girlfriend (Dasha). The developer is Gabriel.
-The game must be finished and playable by Tuesday night (2026-07-22).
-
-## How it runs
-- Single HTML entry point: index.html
+## Runtime
+- Browser-based, single HTML file entry point: index.html
 - No build tool, no npm, no framework
-- GSAP 3.12.5 loaded via CDN for animation
-- All other code is vanilla HTML + CSS + JavaScript
+- GSAP 3.12.5 via CDN for all animation
+- Press Start 2P font via Google Fonts CDN (pixel buttons)
+- Playfair Display font via Google Fonts CDN (subtitle, sidebar)
+- Vanilla HTML + CSS + JS everywhere else
 - Delivered as a zipped folder — recipient opens index.html in Chrome
-- Runs in Codespaces (GitHub) with Live Server on port 5500
+- Dev environment: GitHub Codespaces + Live Server (port 5500)
 
-## Fixed canvas size
-1280 × 720 px. Scaled to fit any screen via JS transform:scale().
-All coordinates in CSS and JS are relative to this 1280×720 space.
+## Canvas
+Fixed 1280×720px. JS scales via transform:scale() to fit any window.
+ALL coordinates in code are in this 1280×720 logical space.
 
-# ════════════════════════════════════════════════════════════
-# SECTION 2 — FULL GAME SCENARIO (designer's original intent)
-# ════════════════════════════════════════════════════════════
+## CRITICAL: Coordinate System
+DevTools reports VIEWPORT pixels, not game-space pixels.
+When transform:scale() is active (e.g. 0.75×), DevTools coords are WRONG.
 
-TITLE: "The Adventures of Inspector Dasha and Apprentice Gabriel in Venice"
+The project uses a calibration helper in game.js:
+- Click anywhere on the game → console logs game-space x/y
+- Press C → copies "left: Xpx; top: Ypx;" to clipboard
+- A red ✓ bubble appears at the clicked spot to confirm
+- ALWAYS calibrate in fullscreen at intended play resolution
+- Sprites are positioned with top + left (NOT bottom)
+- Zone widths/heights are still measured manually from corner clicks
 
-## Title Screen
-- Dark screen with the two characters (full body sprites) standing side by side
-- Title text: "The Adventures of Inspector Dasha and Apprentice Gabriel"
-- CLICK 1: "in Venice" fades in, characters swap outfits from inspector/detective
-  to cliché tourist outfits (fanny pack, bucket hat, sunglasses, camera, guidebook)
-  via a brief fade-out / image-swap / fade-in
-- CLICK 2: Game starts → Intro screen
-
-## Intro Screen (Story Context Cards)
-Series of clickable text cards establishing the story:
-- After a year of training, Gabriel has earned his official detective title
-- Inspector Dasha organised a trip to Venice to celebrate
-- Gabriel is looking forward to a real holiday — no cases, no puzzles
-- As they arrive, Dasha gets her familiar feeling: Venice might have mysteries too
-- Gabriel notes she says that everywhere
-- She smiles. He's not wrong.
-Click to advance through cards, last card transitions to Scene 1.
-
-## Scene 1 — Venice Bridge (Under Repair)
-BACKGROUND: Venice canal, stone bridge with scaffolding and "chiuso/closed" signs,
-gondola docked on the right side of the canal, warm afternoon light.
-
-CHARACTERS ON SCREEN:
-- A group: elderly Italian lady (Signora Rossi) in a bright red veil + 3 children
-- A small grey cat sitting on a stone on the OTHER side of the bridge
-
-HINT COINS: 3 hidden in the background (near lamp post, behind bridge arch, near waterline)
-
-INTERACTIONS:
-1. Click the group → Dialogue → Puzzle 1
-   - Lady explains the bridge is closed (repairs)
-   - There is a gondola but children are too afraid
-   - She asks the detectives to organise the crossing
-   - Dialogue ends → Puzzle 1 opens
-
-2. Click the cat (EASTER EGG — cat is on the far side of the bridge):
-   - Cat says "Meow... mrrr-wow..."
-   - Dasha and Gabriel exchange dialogue, cat joins the party
-   - GameState.catFound = true
-   - A small cat icon 🐱 appears permanently in the dialogue box for rest of game
-   - Cat sprite disappears from scene
-
-3. Click the gondola (LOCKED until Puzzle 1 is solved):
-   - Before solve: gondola shakes slightly, nothing happens
-   - After solve: clicking gondola triggers farewell dialogue then transitions to Scene 2
-
-POST-PUZZLE 1 STATE CHANGE:
-- The group (lady + 3 kids) disappears from the scene
-- Gondola becomes visibly clickable (opacity 1.0, cursor pointer)
-- Farewell dialogue plays
-
-## Puzzle 1 — The Gondola Crossing (River Crossing / Missionaries & Cannibals)
-CLASSIC PUZZLE TYPE: River crossing with constraint.
-
-CHARACTERS: Dasha (adult), Gabriel (adult), Signora Rossi (adult), Kid1 Luca, Kid2 Sofia, Kid3 Marco
-BOAT: Max 2 passengers, min 1 to cross
-CONSTRAINT: On any bank, if there are 1+ adults AND kids outnumber adults → INVALID (kids cry, reset)
-EXCEPTION: A bank with ONLY kids and ZERO adults is valid (MC classic rule)
-WIN: All 6 characters on Bank B, boat empty
-
-UI:
-- Left panel: description + hints
-- Right panel: Bank A | Gondola column | Bank B
-  - Character tokens (emoji + label) in each bank
-  - Click token on current bank → boards gondola (max 2)
-  - Click token on gondola → disembarks back to current bank
-  - "Cross" button → validates constraints, moves boat+passengers to other side
-  - "Reset" button → resets to initial state
-  - Status bar shows feedback messages
-
-ON SOLVE → PuzzleShell shows "Brilliant deduction!" → Continue → Scene1Bridge.onPuzzleSolved()
-
-## Scene 2 — St Mark's Square (Piazza San Marco)
-BACKGROUND: Piazza San Marco, ornate basilica background, pigeons everywhere, tourists.
-
-CHARACTERS ON SCREEN:
-- A flustered male tourist covered in pigeons (Hawaiian shirt, birds on shoulders/arms/head)
-- After Puzzle 2 is solved: a mysterious Venice Carnival character appears
-  (ornate white mask, elaborate costume, holding a decorated gift box)
-
-HINT COINS: 3 hidden in the scene background
-
-INTERACTIONS:
-1. Click the tourist → Dialogue → Puzzle 2
-2. (After Puzzle 2) Carnival character appears via GSAP slide-in → Click → Dialogue → Puzzle 3
-
-POST-PUZZLE 2 STATE CHANGE:
-- Carnival character slides in from the edge of the screen
-- Dialogue: "Impressive deduction, Detectives. Accept this gift." → gifts a box → Puzzle 3 opens
-
-POST-PUZZLE 3 STATE CHANGE:
-- Dialogue confirms destination is Mestre
-- Train transition: background swaps to train interior, brief wait (~3.5s), then Scene 3
-
-## Puzzle 2 — The Pigeon Hour (Exponential / Doubling puzzle)
-CLASSIC PUZZLE TYPE: Exponential growth, work-backwards trick.
-
-PREMISE: Each pigeon calls its best friend who arrives one minute later.
-Population doubles every minute. Square is completely full at 12:00.
-Tourist wants to leave when it is HALF full.
-ANSWER: 11:59
-
-UI: Simple multiple-choice. 4 options displayed as large clickable buttons:
-  11:00 / 11:30 / 11:58 / 11:59
-Player clicks one (highlights it), then clicks Submit.
-Correct = 11:59
-
-ON SOLVE → Scene2StMarco.onPigeonsSolved() → carnival character appears
-
-## Puzzle 3 — The Carnival's Gift (Map + click destination)
-MECHANIC DECISION: Option B — player reads clues and clicks the correct location on a map.
-No navigation/pathfinding. Just read clues, identify destination, click it.
-
-MAP: Illustrated vintage parchment-style map of the Venice lagoon area.
-5 clickable zones defined as pixel rectangles over the map image (700×500px):
-  - Venice (center of lagoon)
-  - Murano (north-east island)
-  - Burano (far north-east island)
-  - Lido di Venezia (long narrow island, south-east)
-  - Mestre ← CORRECT ANSWER (mainland, west, connected by bridge)
-
-CLUES (left panel):
-  🔹 "It is not surrounded by water."
-  🔹 "It sits where the lagoon meets the mainland."
-  🔹 "Every train from Venice stops here first."
-  🔹 "It is the city next door — the one most visitors overlook."
-  🔹 "La Tana di Oberix is waiting there."
-
-UI: Map image fills right panel. Hover shows location label tooltip.
-Click selects zone (highlighted border + 📍 pin icon above).
-Submit checks if selected === 'mestre'.
-
-ON SOLVE → Scene2StMarco.onMapSolved() → dialogue → train transition → Scene 3
-
-## Train Transition
-Not a puzzle screen. Just a scene screen with the train interior background,
-no sprites, no hotspots. Automatic 3.5 second wait then Scene 3 loads.
-Optional: brief dialogue line during the train ride.
-
-## Scene 3 — La Tana di Oberix Restaurant (Mestre)
-BACKGROUND: Interior of a cozy rustic Italian trattoria. Warm candlelight,
-wooden tables, wine bottles, slightly panicked atmosphere.
-
-LOCATION TAG: "Mestre — La Tana di Oberix"
-
-CHARACTERS ON SCREEN:
-- Panicked Italian chef (tall toque hat, apron, holding crumpled recipe paper, sweating)
-
-HINT COINS: 3 hidden in the scene background (wine bottles area, shelf, tablecloth)
-
-INTERACTIONS:
-1. Click the chef → Dialogue → Puzzle 4
-   Chef explains his ancestor Oberix left a sacred recipe but it's scrambled.
-   He needs the detectives to decipher the correct order.
-
-POST-PUZZLE 4 STATE CHANGE:
-- Chef celebrates, thanks the detectives
-- Transition dialogue leads to End Screen
-
-## Puzzle 4 — The Sacred Recipe (Ordering / constraint satisfaction)
-CLASSIC PUZZLE TYPE: Order items by reading logical constraints.
-
-ITEMS (6 ingredients, to be placed in order from BOTTOM to TOP of the dish):
-  focaccia, tomato_sauce, mozzarella, prosciutto, basil, olive_oil
-
-CORRECT ORDER (index 0 = bottom, index 5 = top):
-  [focaccia, tomato_sauce, mozzarella, prosciutto, basil, olive_oil]
-
-CONSTRAINTS (shown as clues in left panel, old recipe style):
-  📜 "La focaccia va sul fondo." → focaccia is at position 0 (bottom)
-  📜 "Il basilico corona il tutto." → basil is near the top (position 4)
-  📜 "Il prosciutto non è sopra il basilico." → prosciutto before basil
-  📜 "La mozzarella riposa tra la salsa e il prosciutto." → mozzarella between tomato_sauce and prosciutto
-  📜 "L'olio d'oliva è l'ultimo tocco." → olive_oil is last (position 5, top)
-  📜 "La salsa di pomodoro copre la base." → tomato_sauce is second (position 1)
-
-UI: 6 ingredient cards displayed in a vertical list in random order.
-Click one card to SELECT it (highlights). Click another card to SWAP them.
-Submit checks if currentOrder matches correctOrder array exactly.
-
-ON SOLVE → Scene3Restaurant.onRecipeSolved() → End Screen
-
-## End Screen
-Dark festive background. All characters displayed.
-Large "Happy Birthday!" text.
-Message revealing that Gabriel organised the whole day for Inspector Dasha.
-Text (roughly): "Every mystery, every puzzle, every canal — it was all for you.
-Happy Birthday, Inspector. The world's greatest detective, and my favourite person."
-Signed: Gabriel (and the cat 🐱 if catFound === true)
+## Delivery
+- Remove debug-menu.js script tag from index.html before gifting
+- Remove DebugMenu.init() from game.js before gifting
+- Remove calibration click/keyup helper from game.js before gifting
+- Download gsap.min.js locally to js/lib/ for offline play
+- Zip entire layton-dasha/ folder
 
 # ════════════════════════════════════════════════════════════
-# SECTION 3 — TECHNICAL ARCHITECTURE
-# ════════════════════════════════════════════════════════════
-
-## Mental model
-The game is one HTML page. All "screens" are <div> elements stacked
-with position:absolute inset:0. Only one has display:block at a time.
-SceneManager fades between them using GSAP.
-
-## Game loop per scene
-1. SceneManager.goTo('screen-scene', callback)
-2. Scene module sets background image src
-3. Scene module injects sprites into #scene-sprites
-4. Scene module injects hotspot coins into #scene-hotspots
-5. Click handlers on sprites call DialogueEngine.start() or PuzzleShell.open()
-6. After dialogue or puzzle resolves, scene updates state and re-renders if needed
-
-## Game loop per puzzle
-1. PuzzleShell.open(config) is called from a scene
-2. PuzzleShell calls SceneManager.goTo('screen-puzzle')
-3. PuzzleShell populates header, description, hint area
-4. PuzzleShell calls config.init(rightPanelElement) — puzzle injects its own UI
-5. Hint button calls config hints array, costs 1 hint coin
-6. Submit button calls config.checkSolution() → true/false
-7. On correct: shows celebration overlay, then calls config.onSolve()
-8. onSolve() returns control to the calling scene module
-
-## State machine
-GameState object is global (defined in state.js, loaded first).
-All scenes and puzzles read from and write to GameState.
-No persistence (no localStorage) — game is single-session.
-
-## Script load order (critical — do not reorder)
-1. gsap.min.js (CDN)
-2. state.js
-3. scene-manager.js
-4. dialogue.js
-5. puzzle-shell.js
-6. puzzles/puzzle1-crossing.js
-7. puzzles/puzzle2-pigeons.js
-8. puzzles/puzzle3-map.js
-9. puzzles/puzzle4-recipe.js
-10. scenes/scene-title.js
-11. scenes/scene-intro.js
-12. scenes/scene1-bridge.js
-13. scenes/scene2-stmarco.js
-14. scenes/scene3-restaurant.js
-15. scenes/scene-end.js
-16. game.js  ← entry point, runs last
-
-## Global objects (all window-scoped, no modules)
-- GameState        (state.js)
-- SceneManager     (scene-manager.js)
-- DialogueEngine   (dialogue.js)
-- PuzzleShell      (puzzle-shell.js)
-- Puzzle1Crossing  (puzzles/puzzle1-crossing.js)
-- Puzzle2Pigeons   (puzzles/puzzle2-pigeons.js)
-- Puzzle3Map       (puzzles/puzzle3-map.js)
-- Puzzle4Recipe    (puzzles/puzzle4-recipe.js)
-- SceneTitle       (scenes/scene-title.js)
-- SceneIntro       (scenes/scene-intro.js)
-- Scene1Bridge     (scenes/scene1-bridge.js)
-- Scene2StMarco    (scenes/scene2-stmarco.js)
-- Scene3Restaurant (scenes/scene3-restaurant.js)
-- SceneEnd         (scenes/scene-end.js)
-
-# ════════════════════════════════════════════════════════════
-# SECTION 4 — COMPLETE FILE STRUCTURE
+# SECTION 2 — COMPLETE FILE STRUCTURE
 # ════════════════════════════════════════════════════════════
 
 layton-dasha/
-│
 ├── index.html
-│
 ├── css/
 │   └── style.css
-│
 ├── js/
 │   ├── game.js
 │   ├── state.js
 │   ├── scene-manager.js
 │   ├── dialogue.js
 │   ├── puzzle-shell.js
-│   │
+│   ├── loading-indicator.js
+│   ├── debug-menu.js              ← REMOVE BEFORE GIFTING
 │   ├── scenes/
-│   │   ├── scene-title.js
-│   │   ├── scene-intro.js
-│   │   ├── scene1-bridge.js
-│   │   ├── scene2-stmarco.js       ← STUB — needs full implementation
-│   │   ├── scene3-restaurant.js    ← STUB — needs full implementation
-│   │   └── scene-end.js            ← STUB — needs full implementation
-│   │
+│   │   ├── scene-title.js         ✅ COMPLETE
+│   │   ├── scene-intro.js         ✅ COMPLETE
+│   │   ├── scene1-bridge.js       ✅ COMPLETE
+│   │   ├── scene2-stmarco.js      ✅ COMPLETE
+│   │   ├── scene3-restaurant.js   ❌ STUB — needs full implementation
+│   │   └── scene-end.js           ❌ STUB — needs full implementation
 │   └── puzzles/
-│       ├── puzzle1-crossing.js     ← COMPLETE
-│       ├── puzzle2-pigeons.js      ← COMPLETE
-│       ├── puzzle3-map.js          ← COMPLETE
-│       └── puzzle4-recipe.js       ← STUB — needs full implementation
-│
+│       ├── puzzle1-crossing.js    ✅ COMPLETE
+│       ├── puzzle2-pigeons.js     ✅ COMPLETE
+│       ├── puzzle3-map.js         ✅ COMPLETE
+│       └── puzzle4-recipe.js      ❌ STUB — needs full implementation
 └── assets/
     ├── backgrounds/
+    │   ├── title-bg.jpg           ✅ exists — full illustrated title
+    │   ├── intro-venice-overview.jpg
+    │   ├── intro-train-arrival.jpg
+    │   ├── intro-station-platform.jpg
     │   ├── scene1-venice-bridge.jpg
-    │   ├── scene2-stmarco.jpg
+    │   ├── smbg.png               ← Scene 2 San Marco background
     │   ├── transition-train.jpg
     │   ├── scene3-restaurant.jpg
-    │   └── end-bg.jpg              ← optional, can be pure CSS
-    │
-    ├── characters/                 ← PNG with transparency
-    │   ├── dasha-idle.png          ← dialogue portrait (400×500px)
+    │   └── end-bg.jpg
+    ├── characters/                ← dialogue portraits, PNG transparent
+    │   ├── dasha-idle.png
     │   ├── dasha-talk.png
     │   ├── gabriel-idle.png
     │   ├── gabriel-talk.png
-    │   ├── lady-idle.png
-    │   ├── lady-talk.png
-    │   ├── tourist-idle.png
-    │   ├── tourist-talk.png
+    │   ├── lady-idle.png          ← Signora Rossi
+    │   ├── lady-talk.png          ← same file duplicated (no talk anim)
+    │   ├── guy-idle.png           ← Tourist (San Marco)
+    │   ├── guy-talk.png
     │   ├── carnival-idle.png
     │   ├── carnival-talk.png
     │   ├── chef-idle.png
     │   ├── chef-talk.png
-    │   ├── cat-idle.png
-    │   ├── cat-talk.png
     │   ├── kid-idle.png
-    │   ├── kid-talk.png
-    │   ├── dasha-fullbody-normal.png    ← title screen (300×650px)
-    │   ├── gabriel-fullbody-normal.png
-    │   ├── dasha-fullbody-tourist.png
-    │   └── gabriel-fullbody-tourist.png
-    │
-    ├── sprites/                    ← PNG with transparency, in-scene objects
-    │   ├── scene-group-bridge.png  ← ~220×320px: lady + 3 kids together
-    │   ├── scene-cat.png           ← ~90×70px: grey cat sitting
-    │   ├── scene-gondola.png       ← ~220×160px: gondola + gondolier
-    │   ├── scene-tourist-birds.png ← ~170×300px: tourist covered in pigeons
-    │   ├── scene-carnival.png      ← ~160×300px: carnival figure with gift box
-    │   └── scene-chef.png          ← ~160×300px: panicked chef with recipe
-    │
+    │   └── kid-talk.png
+    ├── sprites/                   ← in-scene PNGs, transparent
+    │   ├── guyf1.png              ← Tourist frame 1 (AUTOCROPPED)
+    │   ├── guyf2.png              ← Tourist frame 2 (AUTOCROPPED)
+    │   ├── dog.png                ← San Marco dog sprite
+    │   ├── gondola2D.png          ← Puzzle 1 boat
+    │   ├── Dasha-icon.png         ← Puzzle 1 character
+    │   ├── gab-icon.png           ← Puzzle 1 character
+    │   ├── oldlady.png            ← Puzzle 1 character
+    │   ├── kids.png               ← Puzzle 1 character (reused x3)
+    │   └── scene-carnival.png     ← Carnival figure full body
     └── ui/
-        └── map-venice.png          ← 700×500px: parchment map of Venice lagoon area
+        ├── title-bg.jpg           ← same as backgrounds/title-bg.jpg
+        ├── puzzle1bg.png          ← Pixel art Venice canal for Puzzle 1
+        ├── map-venice.png         ← Puzzle 3 parchment map
+        ├── map-marker.png
+        ├── pencil-icon.png        ← dialogue advance icon (animated)
+        └── loading-walk.png       ← 2400×712px, 4-frame walk sprite
 
 # ════════════════════════════════════════════════════════════
-# SECTION 5 — IMPLEMENTATION STATUS
+# SECTION 3 — COMPLETE GAME SCENARIO
 # ════════════════════════════════════════════════════════════
 
-## COMPLETE (written and should be pasted as-is)
-- index.html                  Full HTML structure with all screen divs
-- css/style.css               Full styles — NOTE: see bug fix below
-- js/state.js                 GameState object with coin helpers
-- js/scene-manager.js         SceneManager.goTo() with GSAP fade
-- js/dialogue.js              DialogueEngine with typewriter + portrait swap
-- js/puzzle-shell.js          PuzzleShell.open() reusable wrapper
-- js/game.js                  Entry point + _resizeGame()
-- js/scenes/scene-title.js    Full title screen with 2-phase click
-- js/scenes/scene-intro.js    Story card sequence
-- js/scenes/scene1-bridge.js  Full scene 1 with sprites, coins, dialogue
-- js/puzzles/puzzle1-crossing.js  Full river crossing puzzle
-- js/puzzles/puzzle2-pigeons.js   Full multiple-choice pigeon puzzle
-- js/puzzles/puzzle3-map.js       Full map click-destination puzzle
+## Characters
+- Inspector Dasha: sharp woman in 30s, detective, the birthday girl
+- Apprentice Gabriel: young man, eager, the developer (gift-giver)
+- Signora Rossi: elderly Italian woman, red veil (Scene 1)
+- Tourist: flustered man covered in pigeons (Scene 2)
+- Dog: small white dog, scene decoration (Scene 2)
+- Carnival Figure: mysterious masked figure (Scene 2, post-puzzle 2)
+- Chef Oberix: panicked Italian chef (Scene 3)
+- Cat: grey street cat, easter egg (Scene 1, deferred to after release)
 
-## STUBS (written but empty — need full implementation)
-- js/scenes/scene2-stmarco.js
-- js/scenes/scene3-restaurant.js
-- js/scenes/scene-end.js
-- js/puzzles/puzzle4-recipe.js
+## TITLE SCREEN
+Background: assets/backgrounds/title-bg.jpg (full illustrated scene,
+train corridor, Dasha and Gabriel stepping off into Venice)
 
-## KNOWN BUG — FIX FIRST
-In css/style.css, the #screen-end block has `display: flex` which overrides
-the .screen { display: none } rule, causing the end screen to show on load.
+The image was generated WITH "A trip in Venice" and "PRESS START" text
+baked in. These were REMOVED via Gemini regeneration (Path A).
 
-FIX: Remove `display: flex` from #screen-end.
-Add to #end-content instead:
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+HTML overlay structure:
+  - #title-subtitle: SVG element with linear gradient text
+    (beige→light blue→royal blue→navy fill, paint-order="stroke fill")
+  - #title-press-start: div with pulsating GSAP animation
 
-## ASSETS STATUS
-Not yet generated. All images need to be created with Gemini image generation.
-See Section 7 for full asset prompts.
-During development, use colored placeholder divs instead of real images.
+Behaviour:
+  Phase 0 (initial): PRESS START pulses slowly
+  Click 1 → Phase 1: SVG subtitle fades in, pulse speeds up
+  Click 2 → Phase 2: PRESS START flashes 5x → SceneIntro.init()
+
+CRITICAL BUG FIXED: orphaned gsap.delayedCall() was killing the
+phase 2 flash animation before its onComplete fired.
+Fix: store delayedCall in _pulseDelay, kill it on phase 2 click.
+
+## INTRO SCREEN (Cinematic Sequence)
+Type: BEATS array driven. Three beat types:
+  { type: 'bg', src }      → crossfade background, auto-advance
+  { type: 'narrator', text } → narrator card bottom overlay, click
+  { type: 'dialogue', character, portrait, side, text } → DialogueEngine
+
+ALL three backgrounds preloaded in parallel before sequence starts.
+LoadingIndicator shown during preload.
+Background changes ALSO show LoadingIndicator.
+
+BEATS (in order):
+  bg: intro-venice-overview.jpg
+  narrator: "Venice. A shimmering labyrinth of winding canals..."
+  narrator: "It had been a grueling but rewarding year..."
+  narrator: "Now, his apprenticeship was finally coming to an end..."
+  narrator: "To celebrate this milestone — and force him to take
+             a well-deserved breath — Dasha had orchestrated the
+             perfect getaway..."
+  bg: intro-train-arrival.jpg
+  narrator: "At least, that was the idea. But the moment the train
+             doors hissed open at Santa Lucia..."
+  bg: intro-station-platform.jpg
+  dialogue (7 lines):
+    Dasha: "Just smell that air, Gabriel. Brine, roasted espresso...
+            and undeniable intrigue."
+    Gabriel: "I am fairly certain that is just the scent of the
+              lagoon, Inspector."
+    Dasha: "Do not be so terribly grounded! Look around us. A city
+            this historic does not just sit quietly. It is a giant,
+            beautiful puzzle box — just waiting for someone to
+            twist the dial."
+    Gabriel: "I thought the entire objective of this trip was to
+              leave the puzzle boxes at home? You promised me a
+              few days of total, blissful ignorance before I
+              officially become a detective."
+    Dasha: "Oh, I fully intend to keep that promise! But surely,
+            if a mystery happens to stumble right into our path,
+            it would be profoundly rude to ignore it."
+    Gabriel: "(Sighs) Naturally. Let us just hope the mysteries of
+              Venice are polite enough to let us drop off our
+              luggage at the hotel first."
+    Dasha: "(Smiling) That is the spirit, my soon-to-be Detective!
+            Onward!"
+  → Scene1Bridge.init()
+
+## SCENE 1 — VENICE BRIDGE
+Background: scene1-venice-bridge.jpg
+Location tag: "Venice — Outside the Train Station"
+object-fit: cover; object-position: center top; (crops bottom not top)
+
+Characters BAKED INTO BACKGROUND. No external sprites.
+Zones (invisible divs, #scene-sprites):
+  zone-grandma: left:570 top:280 width:59  height:156
+  zone-kids:    left:862 top:350 width:131 height:143
+  zone-gondola: left:850 top:288 width:134 height:42
+    cursor: default until gondolaUnlocked, pointer after
+
+Hint coins (invisible, #scene-hotspots, 44×44px):
+  coin1: top:210 left:12    (bush on left wall)
+  coin2: top:216 left:718   (hat below edicola)
+  coin3: top:100 left:1050  (cross in background)
+
+INTERACTIONS:
+1. Click zone-kids → _onKidsClick():
+   No exclamation. Short dialogue only:
+   Kid: "We want to go to the other side but the bridge is closed..."
+   Kid: "Please help our grandma to find a solution!"
+
+2. Click zone-grandma → _onGrandmaClick():
+   Red ! bubble animates above grandma's head, THEN dialogue:
+   Signora: "Oh! Signori, per favore — could you help us?"
+   Dasha: "Good afternoon. What seems to be the trouble?"
+   Signora: "This bridge! It is closed for repairs. Could you help?
+             We have been stuck for half an hour..."
+   Kid: "We want to get ice cream with Nonna! It is just on the
+        other side!"
+   Gabriel: "Let us help them! It looks like this gondola can take
+             two people at a time."
+   Signora: "But these little ragazzi always bring trouble. Between
+             themselves they play and stay calm..."
+   Signora: "But..."
+   Signora: "As soon as there is an adult with them, they fight for
+             attention — unless they all have someone looking over
+             them individually."
+   Dasha: "I see! Gabriel, there is a clear solution to this problem!"
+   → Puzzle1Crossing.open()
+
+3. Click zone-gondola (LOCKED until p1 solved):
+   Before solve: screen shakes slightly
+   After solve: → Scene2StMarco.init()
+
+4. onPuzzleSolved() called by Puzzle1:
+   SceneManager.goTo('screen-scene', callback, bg) ← goes back to scene
+   Rebuilds zones (grandma/kids gone, gondola clickable)
+   Plays farewell dialogue then pulses gondola zone
+
+EXCLAMATION MARK: red circle with "!", GSAP back.out spring,
+bounces 2x, floats up and fades (~1.2s total), THEN callback fires.
+Positioned: left:579 top:158 (approx — above grandma zone center)
+
+## PUZZLE 1 — THE GONDOLA CROSSING
+Type: River crossing (Missionaries & Cannibals variant)
+Layout: FULLSCREEN (layout:'fullscreen' in PuzzleShell.open config)
+  Left panel (960px): pixel art Venice canal background (puzzle1bg.png)
+  Right panel (320px): parchment sidebar with rules + hint text + submit
+
+Characters:
+  dasha:   adult, assets/sprites/Dasha-icon.png
+  gabriel: adult, assets/sprites/gab-icon.png
+  signora: adult, assets/sprites/oldlady.png
+  kid1/2/3: kid, assets/sprites/kids.png (same image reused)
+
+Rules:
+  Boat max 2, min 1 to cross
+  If adults > 0 AND kids > adults on any bank → INVALID
+  Bank with ONLY kids and 0 adults → VALID
+  Win: bankB.length === 6, boat.passengers.length === 0
+
+LAYOUT constants (tune these if positions are off):
+  SPRITE_H: 88, SPRITE_H_BOAT: 68
+  BOAT_BOTTOM: 90
+  BOAT_LEFT_X: 50   (boat x when on bank A)
+  BOAT_RIGHT_X: 680 (boat x when on bank B)
+  BOAT_ROTATE_A: 20  (clockwise, matches left bank diagonal)
+  BOAT_ROTATE_B: -20 (counter-clockwise, right bank)
+
+Boat animates left↔right via gsap.to with rotation interpolation.
+Input locked during animation via _animating flag.
+Auto-submits via PuzzleShell.triggerSubmit() on win detection.
+
+Top chrome bar uses PIXEL BUTTONS (see Section 5 — CSS).
+Hints handled internally (not via PuzzleShell), 3 hints max.
+Hint boxes turn from teal to cream as hints are consumed.
+
+Left bank: flex-direction:column, skewY(-10deg), chars skewY(10deg)
+Right bank: flex-direction:row, flex-wrap:wrap-reverse, no skew
+
+DEBUG_BANKS: false (set true to see bank zones as overlays)
+
+On solve → Scene1Bridge.onPuzzleSolved()
+
+## SCENE 2 — PIAZZA SAN MARCO
+Background: smbg.png
+Location tag: "Venice — Piazza San Marco"
+object-fit: cover; object-position: center top;
+
+ARCHITECTURE (critical — this was repeatedly broken):
+  _setupSprites(): clears #scene-sprites, adds all img elements,
+                   then calls _setupZones(container) at the end
+  _setupZones(container): does NOT clear — appends zones on top
+  _setupHotspots(): clears #scene-hotspots, adds coins
+
+Zones → #scene-sprites
+Coins → #scene-hotspots
+
+Sprites:
+  dog.png: height:160px top:543px left:462px transform:scaleX(-1)
+           zIndex:8, cursor:default (zone handles clicks)
+  guyf1/guyf2.png: height:650px top:433px left:770px
+                   zIndex:9, cursor:default
+                   animated at 3fps via _animateSprite()
+                   ONLY shown if !GameState.puzzlesSolved.p2
+  scene-carnival.png: height:240px bottom:80px right:180px
+                      ONLY shown after p2 solved, before p3 solved
+                      slides in from right via GSAP
+
+Zones:
+  zone-tourist: left:770 top:433 width:180 height:320 (255,165,0)
+                ONLY if !p2 solved
+  zone-dog:     left:319 top:561 width:80  height:80  (0,200,100)
+
+Hint coins (44×44px, #scene-hotspots):
+  coin1: top:262 left:334
+  coin2: top:41  left:510
+  coin3: top:63  left:890
+
+Tourist click → _onTouristClick():
+  Exclamation above head, then 5-line dialogue → Puzzle2Pigeons.open()
+
+Dog click → _onDogClick():
+  Brief 2-line dialogue, returns to scene
+
+Carnival click → _onCarnivalClick():
+  6-line dialogue → Puzzle3Map.open()
+
+onPigeonsSolved():
+  p2 dialogue (3 lines)
+  Kill tourist _animTimer, fade out tourist sprite
+  Remove zone-tourist
+  Call _spawnCarnival(container)
+
+onMapSolved():
+  3-line dialogue → _trainTransition()
+
+_trainTransition():
+  Clear sprites + hotspots
+  Preload train bg, crossfade
+  Show location tag "Venice → Mestre — On the Train"
+  3-line train dialogue → Scene3Restaurant.init()
+
+_animateSprite(imgEl, frames, fps):
+  setInterval cycles through frames array
+  Timer stored on imgEl._animTimer for cleanup
+
+Portrait key for tourist: 'guy' → guy-idle.png / guy-talk.png
+
+EXCLAMATION MARK: same pattern as Scene 1.
+Positioned: left:820 top:415 (above tourist zone)
+
+## PUZZLE 2 — THE PIGEON HOUR
+Type: Multiple choice (4 options)
+Answer: 11:59
+Premise: Square full at 12:00, doubles every minute,
+         tourist wants to leave when half full.
+Options: 11:00 / 11:30 / 11:58 / 11:59
+UI: 4 large clickable buttons, selected = highlighted
+Submit checks _selected === '11:59'
+On solve → Scene2StMarco.onPigeonsSolved()
+
+## PUZZLE 3 — THE CARNIVAL'S GIFT (Map)
+Type: Click destination on map (Option B — no pathfinding)
+Map image: assets/ui/map-venice.png (700×500px parchment style)
+Answer: 'mestre'
+
+5 zone locations:
+  murano:  x:420 y:120 w:90  h:60
+  burano:  x:530 y:60  w:90  h:60
+  lido:    x:480 y:310 w:100 h:55
+  mestre:  x:80  y:200 w:100 h:60  ← CORRECT
+  venezia: x:290 y:220 w:110 h:80
+
+IMPORTANT: These x/y values are relative to the 700×500 map image,
+not the game canvas. Must be re-calibrated after map image is
+generated to match actual landmark positions.
+
+Clues (left panel):
+  "It is not surrounded by water."
+  "It sits where the lagoon meets the mainland."
+  "Every train from Venice stops here first."
+  "It is the city next door — the one most visitors overlook."
+  "La Tana di Oberix is waiting there."
+
+On solve → Scene2StMarco.onMapSolved()
+
+## SCENE 3 — LA TANA DI OBERIX RESTAURANT
+Background: scene3-restaurant.jpg
+Location tag: "Mestre — La Tana di Oberix"
+STATUS: ❌ STUB — needs full implementation
+
+Characters: Chef Oberix (panicked, holding recipe paper)
+Assets: chef-idle.png, chef-talk.png for dialogue
+In-scene: scene-chef.png (if generated) or baked in background
+
+3 hint coins needed (measure with calibration tool)
+
+Click chef → _onChefClick():
+  Exclamation → dialogue → Puzzle4Recipe.open()
+
+Dialogue (chef intro):
+  Chef: "Mamma mia! You must help me! My ancestor, the great Oberix,
+         left me his sacred recipe!"
+  Chef: "But it is all scrambled! I cannot read the order! Tonight is
+         the anniversary dinner — I am ruined!"
+  Dasha: "Let us see it. Gabriel, take notes."
+  Gabriel: "On it, Inspector."
+  Chef: "Please, Detectives — the honour of the Oberix name depends
+         on you!"
+  → Puzzle4Recipe.open()
+
+onRecipeSolved():
+  Dialogue:
+    Chef: "Perfetto! PERFETTO! That is exactly it! You have saved the
+           Oberix legacy!"
+    Dasha: "Our pleasure. Good luck tonight, Chef."
+    Chef: "Please — stay! Eat! It is all on the house!"
+    Gabriel: "Inspector... I think I have a confession to make."
+    Dasha: "Oh?"
+    Gabriel: "The bridge. The pigeons. The map. The recipe. I... may
+              have arranged all of it."
+    Dasha: "...You organised all of this. For me."
+    Gabriel: "Happy Birthday, Inspector. You deserve every mystery."
+  → setTimeout → SceneEnd.init()
+
+## PUZZLE 4 — LA RICETTA SACRA (Recipe Ordering)
+Type: Click-to-swap ordering puzzle
+STATUS: ❌ STUB — needs full implementation
+
+CORRECT ORDER (index 0 = bottom, index 5 = top):
+  ['focaccia', 'tomato_sauce', 'mozzarella', 'prosciutto',
+   'basil', 'olive_oil']
+
+Display is REVERSED (top of screen = top of dish).
+
+LABELS:
+  focaccia:     '🍞 Focaccia'
+  tomato_sauce: '🍅 Salsa di Pomodoro'
+  mozzarella:   '🧀 Mozzarella'
+  prosciutto:   '🥩 Prosciutto'
+  basil:        '🌿 Basilico'
+  olive_oil:    "🫒 Olio d'Oliva"
+
+NOTE: Emoji in puzzle text is acceptable (not UI chrome).
+
+CLUES (left panel, old recipe style):
+  "La focaccia va sul fondo."
+  "La salsa di pomodoro copre la base."
+  "La mozzarella riposa tra la salsa e il prosciutto."
+  "Il prosciutto non è sopra il basilico."
+  "Il basilico corona il tutto."
+  "L'olio d'oliva è l'ultimo tocco."
+
+UI: 6 ingredient cards in vertical list (randomised on open)
+    Click to SELECT (highlights), click another to SWAP
+    Submit checks currentOrder === CORRECT_ORDER exactly
+
+Hints:
+  "Start with certainties: focaccia is bottom, olive oil is top."
+  "Tomato sauce 'covers the base' — it sits directly above focaccia."
+  "Mozzarella is between tomato sauce and prosciutto. Basil is second
+   from top."
+
+On solve → Scene3Restaurant.onRecipeSolved()
+
+## END SCREEN
+STATUS: ❌ STUB — needs full implementation
+
+Background: dark with confetti emojis floating (GSAP animated)
+Content:
+  - "Happy Birthday, Dasha! 🎂" (large golden title, GSAP back.out)
+  - Character lineup: gabriel-fullbody-tourist.png +
+                      dasha-fullbody-tourist.png
+  - If GameState.catFound: 🐱 emoji next to characters
+  - Message:
+    "Every bridge, every pigeon, every mystery today was made for you.
+     You are the world's greatest detective — and my favourite person.
+     Con amore, Gabriel [& the cat 🐱 if catFound]"
 
 # ════════════════════════════════════════════════════════════
-# SECTION 6 — FILES TO IMPLEMENT (full specification)
+# SECTION 4 — SCRIPT LOAD ORDER (CRITICAL)
 # ════════════════════════════════════════════════════════════
 
-## js/scenes/scene2-stmarco.js
+In index.html, scripts load in this exact order:
 
+1. gsap.min.js (CDN)
+2. js/state.js
+3. js/scene-manager.js
+4. js/dialogue.js
+5. js/puzzle-shell.js
+6. js/loading-indicator.js
+7. js/debug-menu.js            ← REMOVE BEFORE GIFTING
+8. js/puzzles/puzzle1-crossing.js
+9. js/puzzles/puzzle2-pigeons.js
+10. js/puzzles/puzzle3-map.js
+11. js/puzzles/puzzle4-recipe.js
+12. js/scenes/scene-title.js
+13. js/scenes/scene-intro.js
+14. js/scenes/scene1-bridge.js
+15. js/scenes/scene2-stmarco.js
+16. js/scenes/scene3-restaurant.js
+17. js/scenes/scene-end.js
+18. js/game.js                 ← entry point, MUST be last
+
+# ════════════════════════════════════════════════════════════
+# SECTION 5 — ARCHITECTURE & SYSTEMS
+# ════════════════════════════════════════════════════════════
+
+## Global State (state.js)
+const GameState = {
+  collectedCoins: {
+    scene1: new Set(),
+    scene2: new Set(),   ← MUST exist or coins silently fail
+    scene3: new Set(),
+  },
+  hintCoins: 0,
+  catFound: false,
+  puzzlesSolved: { p1:false, p2:false, p3:false, p4:false },
+  gondolaUnlocked: false,
+  addHintCoin(),       ← increments + GSAP bounces counter
+  spendHintCoin(),     ← returns false if 0 coins
+  _updateCoinDisplay()
+}
+
+## SceneManager (scene-manager.js)
+SceneManager.goTo(targetId, onComplete, bgSrc)
+  - bgSrc triggers preload BEFORE transition starts
+  - LoadingIndicator.show() during preload, .hide() before fade-in
+  - Fades out current screen, fades in target
+  - Sets display:'flex' for screen-puzzle and screen-end
+  - Sets display:'block' for all other screens
+  - Shows/hides #hud for screen-scene and screen-puzzle
+
+CRITICAL BUG FIXED: was always setting display:'block' causing
+#screen-puzzle flex layout to break → black bar at bottom.
+Fix: flexScreens array, set display:'flex' for those screens.
+
+## DialogueEngine (dialogue.js)
+DialogueEngine.start(lines, onComplete)
+  lines: [{ character, portrait, side, text }]
+  - portrait maps to assets/characters/{portrait}-idle.png + -talk.png
+  - side: 'left' or 'right' — portrait position
+  - Omit portrait field entirely for no-portrait lines
+  - 'gabriel' is in MIRRORED_PORTRAITS set → scaleX(-1) applied
+  - Portrait opacity set to 0, class applied, src set, THEN onload
+    reveals it → prevents flip artifact on character switch
+  - Talk animation: alternates idle/talk every 190ms during typing
+  - Click 1 during typing: skips to end of current line
+  - Click 2: advances to next line or calls onComplete
+  - Cat companion 🐱 badge shows if GameState.catFound === true
+  - Dialogue box slides up from bottom via GSAP on start
+  - Slides back down on end
+  - NO_TALK_ANIM set: portraits with idle-only assets skip animation
+    (add 'lady', 'kid' here if only idle assets exist)
+
+Portrait container: above top-left of dialogue box
+  position: absolute; left:200px; bottom:152px; width:150px; height:165px
+  z-index: 100 (BELOW dialogue box)
+
+Dialogue box: position: absolute; left:200px; right:200px; bottom:10px
+  z-index: 101 (ABOVE portrait)
+
+Name tab: child of dialogue box, position:absolute; top:-38px; left:0
+  z-index: 103 (inherits box stacking context → above portrait)
+
+## PuzzleShell (puzzle-shell.js)
+PuzzleShell.open(config)
+config = {
+  id, number, title, layout, description, hints,
+  init(container), checkSolution(), onSolve()
+}
+
+layout: 'fullscreen' → hides header, left panel, footer
+        (undefined/standard) → shows all standard chrome
+
+PuzzleShell.triggerSubmit() → public method for fullscreen puzzles
+  to call submit programmatically (e.g. on auto-win detection)
+
+## LoadingIndicator (loading-indicator.js)
+LoadingIndicator.show() / .hide(onComplete)
+Position: bottom-right corner, z-index:200
+Sprite: loading-walk.png (2400×712px, 4 frames)
+  width:90px height:107px background-size:360px 107px
+  animation: steps(4), -360px total travel
+No box/border — just the sprite + "Investigating..." text with
+staggered dot animation.
+
+## DebugMenu (debug-menu.js) ← REMOVE BEFORE GIFTING
+Toggle: ² key (AZERTY) or backtick ` (QWERTY)
+Uses keyup not keydown (prevents double-fire on AZERTY)
+Cooldown flag prevents rapid double-toggle
+Buttons: jump to any scene or puzzle instantly
+
+# ════════════════════════════════════════════════════════════
+# SECTION 6 — CSS ARCHITECTURE
+# ════════════════════════════════════════════════════════════
+
+## Key Layout Rules
+#game-container: 1280×720px, position:relative, overflow:hidden
+  transform set by JS _resizeGame()
+
+.screen: position:absolute; inset:0; display:none; overflow:hidden
+  SceneManager sets display to 'block' or 'flex' — never set in CSS
+
+#screen-end: DO NOT set display:flex in CSS — SceneManager handles it
+#end-content: position:absolute; top:50%; left:50%;
+              transform:translate(-50%,-50%)
+
+## Background Images
+#scene-background:
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit: cover;
+  object-position: center top;   ← anchors top, crops bottom
+  pointer-events: none;
+
+## Scene Containers
+#scene-sprites, #scene-hotspots:
+  position:absolute; inset:0; pointer-events:none;
+
+#scene-sprites > *, #scene-hotspots > *:
+  pointer-events: auto;          ← CRITICAL — without this, clicks fail
+
+## Dialogue System
+#dialogue-overlay: position:absolute; bottom:0; left:0; right:0;
+  height:280px; z-index:100; display:none; cursor:pointer; overflow:visible
+
+#dialogue-portrait-container:
+  position:absolute; left:200px; bottom:152px;
+  width:150px; height:165px; z-index:100; display:none
+
+#dialogue-portrait-img.mirrored: transform:scaleX(-1)
+
+#dialogue-box:
+  position:absolute; left:200px; right:200px; bottom:10px;
+  background: layered parchment gradients;
+  border:3px solid #7a500a; border-radius:14px;
+  padding:14px 52px 26px 28px;
+  min-height:148px; overflow:visible; z-index:101
+
+#dialogue-name-tab:
+  position:absolute; top:-38px; left:0;
+  height:38px; min-width:160px;
+  background:#170f04; border:3px solid #7a500a; border-bottom:none;
+  border-radius:10px 10px 0 0;
+  display:flex; align-items:center; justify-content:center;
+  z-index:103
+
+#dialogue-text-content: color:#1a0e04 (dark ink on parchment)
+
+#dialogue-advance-pencil:
+  position:absolute; bottom:12px; right:16px;
+  width:32px; height:32px; object-fit:contain;
+  animation: pencil-tap 1.6s ease-in-out infinite;
+  transform-origin: bottom right;
+
+@keyframes pencil-tap:
+  0%/100%: translateY(0) rotate(-20deg) opacity:0.70
+  35%/55%: translateY(-8px) rotate(-13deg) opacity:1.00
+
+## Pixel Buttons (shared, all puzzles)
+.pixel-btn: Press Start 2P font, 4px black border, flex centered
+.pixel-btn-teal: background #559eab
+.pixel-btn-orange: background #e67e22
+.btn-text: color:#f4ead5, z-index:1
+.btn-text::before: -webkit-text-stroke 5px black (outline effect)
+.hint-box: 22×26px, 3px black border, Press Start 2P font
+.hint-box-available: background #a8d5cf (teal)
+.hint-box-used: background #f4ead5 (cream)
+
+## Hint Coins
+.hintcoin: gold radial-gradient circle, 44×44px, 50% border-radius,
+  animation:float 2.4s ease-in-out infinite (translateY 0→-9px)
+  — only shown during collect animation, normally opacity:0
+
+## HUD
+#hud: position:absolute; top:16px; right:16px; z-index:50
+#hint-coin-counter: dark pill with gold border, coin emoji + count
+
+## Puzzle Screen
+#screen-puzzle: display:flex; flex-direction:column ← SET BY JS
+#puzzle-body: flex:1; display:flex; overflow:hidden; min-height:0
+#puzzle-left-panel: width:400px; border-right:2px solid #2e1c0c
+#puzzle-right-panel: flex:1; padding:20px; position:relative
+When layout='fullscreen': left-panel, header, footer display:none
+  right-panel padding:0 overflow:hidden
+
+# ════════════════════════════════════════════════════════════
+# SECTION 7 — KEY DECISIONS & CONVENTIONS
+# ════════════════════════════════════════════════════════════
+
+## Naming Conventions
+- Displayed text: Italian/proper names always
+  (Piazza San Marco, NOT St Mark's Square)
+- JS object names: StMarco, Scene2StMarco etc. — don't change
+- File names: lowercase, no change
+- Portrait key 'lady' → assets/characters/lady-idle.png + lady-talk.png
+- Portrait key 'guy'  → assets/characters/guy-idle.png + guy-talk.png
+- To skip portrait: omit field entirely from line object
+
+## Sprite vs Zone Architecture
+- All CHARACTER SPRITES are <img> elements in #scene-sprites
+- All CLICK ZONES are <div> elements in #scene-sprites (appended after)
+- All HINT COINS are <div> elements in #scene-hotspots
+- #scene-sprites is cleared ONCE in _setupSprites() — nowhere else
+- _setupZones() receives container as argument, does NOT clear
+- _setupHotspots() clears #scene-hotspots independently
+
+## Portrait System
+- Portraits cycle between -idle and -talk during typewriter
+- Gabriel's portrait is mirrored (in MIRRORED_PORTRAITS Set)
+- The flip-artifact bug is fixed: opacity→0, apply class, set src,
+  onload → opacity→1 (prevents old portrait flipping before swap)
+- Talk animation uses setInterval at 190ms
+- To disable talk anim for a portrait: add to NO_TALK_ANIM Set
+
+## Coordinate System
+- ALL positions are in 1280×720 logical space
+- Use calibration tool in game.js (click + C to copy)
+- Always measure at scale(1) / fullscreen
+- Sprites: use top + left (never bottom for new positions)
+- Zones: top-left corner + width + height
+- Coins: top-left corner (44×44px fixed size, subtract 22 from center)
+
+## Scene Architecture Pattern
+Each scene module follows this pattern:
+  init() → SceneManager.goTo(id, callback, bgSrc)
+  callback:
+    _setupSprites()    clears #scene-sprites, adds imgs, calls _setupZones
+    _setupHotspots()   clears #scene-hotspots, adds coins
+    _showLocationTag() fades in/out location name
+  _setupZones(container) appends invisible click divs
+  _showExclamation(onComplete) → red ! bubble above character
+  onXxxSolved() → called by puzzle, returns to scene
+
+## GSAP Patterns
+- Slide in: gsap.from(el, {x:-200, opacity:0, duration:0.7})
+- Fade in:  gsap.fromTo(el, {opacity:0}, {opacity:1, duration:0.5})
+- Shake:    gsap.to(el, {x:8, duration:0.07, repeat:5, yoyo:true})
+- Coin pop: gsap.to(coin, {scale:1.6, opacity:0, y:-35, duration:0.55})
+- Float:    gsap.to(el, {y:-9, duration:2.4, repeat:-1, yoyo:true})
+- DelayedCall must be stored in variable and killed if scene changes
+
+## Puzzle 1 Specific
+- Boat animation locks input via _animating flag
+- Auto-win calls PuzzleShell.triggerSubmit() after 0.9s delay
+- Bank skew: left bank skewY(-10deg), chars counter-skewY(10deg)
+- Boat rotation: A=20deg (clockwise), B=-20deg (counter-clockwise)
+- GSAP interpolates rotation during crossing animation
+- DEBUG_BANKS:false in production
+
+## Puzzle 2 Specific
+- Answer is 11:59 — one minute before full at 12:00
+- Multiple choice, no state machine needed
+- onSolve → Scene2StMarco.onPigeonsSolved()
+
+## Puzzle 3 Specific
+- Mechanic: click correct location on map image
+- Answer: 'mestre'
+- Zone coordinates are relative to 700×500 MAP IMAGE not game canvas
+- Must recalibrate zone coords after generating final map image
+- onSolve → Scene2StMarco.onMapSolved()
+
+# ════════════════════════════════════════════════════════════
+# SECTION 8 — COMPLETE FILE CONTENTS
+# ════════════════════════════════════════════════════════════
+
+## index.html (structure — paste actual file)
+Key div structure:
+  #game-wrapper > #game-container >
+    #screen-title
+    #screen-intro
+      #intro-background (img)
+      #narrator-overlay > #narrator-label, #narrator-text, #narrator-advance
+    #screen-scene
+      #scene-background (img)
+      #scene-sprites
+      #scene-hotspots
+      #scene-location-tag
+    #screen-puzzle
+      #puzzle-header > #puzzle-number, #puzzle-title-text
+      #puzzle-body >
+        #puzzle-left-panel > #puzzle-description, #puzzle-hint-area
+        #puzzle-right-panel
+      #puzzle-footer > #puzzle-submit-btn
+      #puzzle-result > #puzzle-result-inner > #puzzle-result-text, btn
+    #screen-end
+      #end-content > #end-title, #end-characters, #end-message
+    #dialogue-overlay
+      #dialogue-portrait-container > img#dialogue-portrait-img
+      #dialogue-box >
+        #dialogue-name-tab > #dialogue-speaker-name, #cat-companion
+        #dialogue-text-content
+        img#dialogue-advance-pencil
+    #hud > #hint-coin-counter > #hintcoin-icon, #hint-count
+    #loading-indicator > #loading-sprite, #loading-text
+
+Title screen SVG:
+  <svg id="title-subtitle" width="720" height="100"
+       style="position:absolute; left:100px; bottom:138px;
+              opacity:0; pointer-events:none; overflow:visible">
+    <defs>
+      <linearGradient id="subtitle-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#f0dc98"/>
+        <stop offset="18%"  stop-color="#c8dcf8"/>
+        <stop offset="42%"  stop-color="#3d6ec8"/>
+        <stop offset="72%"  stop-color="#1c3e90"/>
+        <stop offset="100%" stop-color="#0a1850"/>
+      </linearGradient>
+    </defs>
+    <text x="2" y="78"
+      font-family="'Playfair Display', 'Palatino Linotype', serif"
+      font-size="74" font-style="italic" font-weight="900"
+      letter-spacing="1"
+      fill="url(#subtitle-grad)"
+      stroke="#07102e" stroke-width="6"
+      paint-order="stroke fill">
+      A trip in Venice
+    </text>
+  </svg>
+  <div id="title-press-start">✦ PRESS START ✦</div>
+
+## js/game.js
 ```javascript
-const Scene2StMarco = {
+window.addEventListener('load', () => {
+  _resizeGame();
+  window.addEventListener('resize', _resizeGame);
+  DebugMenu.init();   // REMOVE BEFORE GIFTING
+  SceneTitle.init();
+});
 
-  init() {
-    document.getElementById('scene-background').src = 'assets/backgrounds/scene2-stmarco.jpg';
-    SceneManager.goTo('screen-scene', () => {
-      this._setupSprites();
-      this._setupHotspots();
-      this._showLocationTag('Venice — Piazza San Marco');
-    });
-  },
+function _resizeGame() {
+  const container = document.getElementById('game-container');
+  const scaleX = window.innerWidth  / 1280;
+  const scaleY = window.innerHeight / 720;
+  const scale  = Math.min(scaleX, scaleY);
+  container.style.transform = `scale(${scale})`;
+}
 
-  _setupSprites() {
-    const container = document.getElementById('scene-sprites');
-    container.innerHTML = '';
+// CALIBRATION HELPER — REMOVE BEFORE GIFTING
+let _lastCoords = { x: 0, y: 0 };
 
-    // Tourist with birds — only if puzzle 2 not yet solved
-    if (!GameState.puzzlesSolved.p2) {
-      const tourist = document.createElement('img');
-      tourist.src       = 'assets/sprites/scene-tourist-birds.png';
-      tourist.id        = 'sprite-tourist';
-      tourist.className = 'clickable-sprite';
-      Object.assign(tourist.style, {
-        position: 'absolute', bottom: '90px', left: '260px', height: '280px'
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('game-container')
+    .addEventListener('click', (e) => {
+      const rect  = e.currentTarget.getBoundingClientRect();
+      const scale = rect.width / 1280;
+      const x     = Math.round((e.clientX - rect.left) / scale);
+      const y     = Math.round((e.clientY - rect.top)  / scale);
+      _lastCoords = { x, y };
+
+      const dot = document.createElement('div');
+      Object.assign(dot.style, {
+        position:'absolute', left:x+'px', top:y+'px',
+        width:'10px', height:'10px', borderRadius:'50%',
+        background:'#ff3333', border:'2px solid #fff',
+        transform:'translate(-50%,-50%)',
+        pointerEvents:'none', zIndex:'9999', opacity:'0.7',
       });
-      tourist.addEventListener('click', () => this._onTouristClick());
-      // Slight panic shake loop
-      gsap.to(tourist, {
-        rotation: 2, duration: 0.3, repeat: -1, yoyo: true,
-        ease: 'sine.inOut', transformOrigin: 'bottom center'
-      });
-      container.appendChild(tourist);
-    }
+      document.getElementById('game-container').appendChild(dot);
+      gsap.to(dot, { opacity:0, scale:0, duration:0.4, delay:1.6,
+        onComplete: () => dot.remove() });
 
-    // Carnival character — only if puzzle 2 solved AND puzzle 3 not yet solved
-    if (GameState.puzzlesSolved.p2 && !GameState.puzzlesSolved.p3) {
-      const carnival = document.createElement('img');
-      carnival.src       = 'assets/sprites/scene-carnival.png';
-      carnival.id        = 'sprite-carnival';
-      carnival.className = 'clickable-sprite';
-      Object.assign(carnival.style, {
-        position: 'absolute', bottom: '90px', right: '220px', height: '290px',
-        opacity: '0'
-      });
-      carnival.addEventListener('click', () => this._onCarnivalClick());
-      container.appendChild(carnival);
-
-      // Slide in from right
-      gsap.fromTo(carnival,
-        { x: 200, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' }
-      );
-    }
-  },
-
-  _setupHotspots() {
-    const container = document.getElementById('scene-hotspots');
-    container.innerHTML = '';
-
-    const coins = [
-      { id: 'scene2-coin1', style: { top: '60px',  left: '80px'  } },
-      { id: 'scene2-coin2', style: { top: '140px', left: '700px' } },
-      { id: 'scene2-coin3', style: { top: '320px', left: '1100px'} },
-    ];
-
-    coins.forEach(({ id, style }) => {
-      if (GameState.collectedCoins.scene2.has(id)) return;
-      const coin = document.createElement('div');
-      coin.className = 'hintcoin';
-      Object.assign(coin.style, style);
-      coin.addEventListener('click', (e) => {
-        e.stopPropagation();
-        GameState.collectedCoins.scene2.add(id);
-        GameState.addHintCoin();
-        gsap.to(coin, { scale: 1.6, opacity: 0, y: -35, duration: 0.5,
-          onComplete: () => coin.remove() });
-      });
-      container.appendChild(coin);
+      console.log(`x: ${x}px, y: ${y}px`);
     });
-  },
 
-  _showLocationTag(text) {
-    const tag = document.getElementById('scene-location-tag');
-    tag.textContent = text;
-    gsap.fromTo(tag,
-      { opacity: 0, y: -10 },
-      { opacity: 1, y: 0, duration: 0.5, delay: 0.3,
-        onComplete: () => gsap.to(tag, { opacity: 0, duration: 0.5, delay: 2.5 })
-      }
-    );
-  },
-
-  _onTouristClick() {
-    if (GameState.puzzlesSolved.p2) return;
-    DialogueEngine.start([
-      { character: 'Tourist', portrait: 'tourist', side: 'left',
-        text: "Help! HELP! They just keep coming! I only had a sandwich!" },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Sir, calm down. How long have you been standing there?" },
-      { character: 'Tourist', portrait: 'tourist', side: 'left',
-        text: "Since 10am! The square fills completely at noon! I need to know when to run!" },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "Each bird calls another, and they arrive one per minute..." },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "A classic doubling problem. Gabriel — when is the square half full?" },
-    ], () => {
-      Puzzle2Pigeons.open();
-    });
-  },
-
-  _onCarnivalClick() {
-    if (GameState.puzzlesSolved.p3) return;
-    DialogueEngine.start([
-      { character: '???', portrait: 'carnival', side: 'left',
-        text: "Brava, Detectives. That was most impressive." },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Who are you?" },
-      { character: '???', portrait: 'carnival', side: 'left',
-        text: "A friend. I have been watching your deductions with great interest." },
-      { character: '???', portrait: 'carnival', side: 'left',
-        text: "Consider this a gift. It will show you where your next adventure begins." },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "A... map?" },
-      { character: '???', portrait: 'carnival', side: 'left',
-        text: "Buona fortuna, Ispettore." },
-    ], () => {
-      Puzzle3Map.open();
-    });
-  },
-
-  // Called by Puzzle2Pigeons on solve
-  onPigeonsSolved() {
-    DialogueEngine.start([
-      { character: 'Tourist', portrait: 'tourist', side: 'left',
-        text: "11:59?! I have 59 more minutes of this?! NOOO—" },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Run, sir. Run now." },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "Inspector... there's someone watching us from the arcade..." },
-    ], () => {
-      GameState.puzzlesSolved.p2 = true;
-      this._setupSprites(); // re-render: tourist gone, carnival appears
-    });
-  },
-
-  // Called by Puzzle3Map on solve
-  onMapSolved() {
-    DialogueEngine.start([
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Mestre. Of course — just across the Ponte della Libertà." },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "La Tana di Oberix... do you know the place?" },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "I know we need to take the train. Come on, Detective." },
-    ], () => {
-      // Train transition
-      document.getElementById('scene-background').src = 'assets/backgrounds/transition-train.jpg';
-      document.getElementById('scene-sprites').innerHTML  = '';
-      document.getElementById('scene-hotspots').innerHTML = '';
-      document.getElementById('scene-location-tag').style.opacity = '0';
-
-      // Show brief train dialogue
-      setTimeout(() => {
-        DialogueEngine.start([
-          { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-            text: "I still can't believe we're working on your birthday trip." },
-          { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-            text: "We're not working. We're having an adventure. There's a difference." },
-        ], () => {
-          setTimeout(() => Scene3Restaurant.init(), 1500);
+  window.addEventListener('keyup', (e) => {
+    if (e.key === 'c' || e.key === 'C') {
+      const text = `left: ${_lastCoords.x}px; top: ${_lastCoords.y}px;`;
+      navigator.clipboard.writeText(text).then(() => {
+        const confirm = document.createElement('div');
+        Object.assign(confirm.style, {
+          position:'absolute',
+          left:_lastCoords.x+'px', top:_lastCoords.y+'px',
+          width:'18px', height:'18px', borderRadius:'50%',
+          background:'#ff3333', border:'2px solid #fff',
+          transform:'translate(-50%,-50%)',
+          pointerEvents:'none', zIndex:'9999',
+          fontSize:'9px', color:'#fff',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontWeight:'bold',
         });
-      }, 1200);
-    });
-  },
-};
+        confirm.textContent = '✓';
+        document.getElementById('game-container').appendChild(confirm);
+        gsap.fromTo(confirm,
+          { scale:0.5, opacity:1 },
+          { scale:1.8, opacity:0, duration:0.6, ease:'power2.out',
+            onComplete: () => confirm.remove() });
+        console.log(`Copied → ${text}`);
+      });
+    }
+  });
+});
 ```
 
----
-
-## js/scenes/scene3-restaurant.js
-
+## js/scenes/scene-title.js
 ```javascript
-const Scene3Restaurant = {
+const SceneTitle = {
+  _phase: 0,
+  _clickHandler: null,
+  _pulseDelay: null,
 
   init() {
-    document.getElementById('scene-background').src = 'assets/backgrounds/scene3-restaurant.jpg';
-    SceneManager.goTo('screen-scene', () => {
-      this._setupSprites();
-      this._setupHotspots();
-      this._showLocationTag('Mestre — La Tana di Oberix');
-    });
-  },
+    this._phase      = 0;
+    this._pulseDelay = null;
+    gsap.set('#title-subtitle',    { opacity: 0, y: 18 });
+    gsap.set('#title-press-start', { opacity: 1, scale: 1 });
 
-  _setupSprites() {
-    const container = document.getElementById('scene-sprites');
-    container.innerHTML = '';
-
-    if (!GameState.puzzlesSolved.p4) {
-      const chef = document.createElement('img');
-      chef.src       = 'assets/sprites/scene-chef.png';
-      chef.id        = 'sprite-chef';
-      chef.className = 'clickable-sprite';
-      Object.assign(chef.style, {
-        position: 'absolute', bottom: '80px', right: '280px', height: '300px'
+    SceneManager.goTo('screen-title', () => {
+      gsap.delayedCall(0.5, () => this._startPulse('slow'));
+      gsap.delayedCall(0.8, () => {
+        this._clickHandler = () => this._handleClick();
+        document.getElementById('screen-title')
+          .addEventListener('click', this._clickHandler);
       });
-      chef.addEventListener('click', () => this._onChefClick());
-      // Panic animation
-      gsap.to(chef, {
-        y: -5, duration: 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
+    });
+  },
+
+  _startPulse(speed) {
+    gsap.killTweensOf('#title-press-start');
+    const duration = speed === 'fast' ? 0.55 : 1.2;
+    gsap.to('#title-press-start', {
+      opacity: 0.55, scale: 0.96, duration,
+      repeat: -1, yoyo: true, ease: 'sine.inOut',
+    });
+  },
+
+  _handleClick() {
+    if (this._phase === 0) {
+      this._phase = 1;
+      gsap.to('#title-subtitle', { opacity:1, y:0, duration:0.75,
+        ease:'power2.out' });
+      this._pulseDelay = gsap.delayedCall(0.8,
+        () => this._startPulse('fast'));
+
+    } else if (this._phase === 1) {
+      this._phase = 2;
+      if (this._pulseDelay) { this._pulseDelay.kill();
+        this._pulseDelay = null; }
+      document.getElementById('screen-title')
+        .removeEventListener('click', this._clickHandler);
+      gsap.killTweensOf('#title-press-start');
+      gsap.to('#title-press-start', {
+        opacity: 0, duration: 0.12, repeat: 5, yoyo: true, ease: 'none',
+        onComplete: () => SceneIntro.init(),
       });
-      container.appendChild(chef);
-    }
-  },
-
-  _setupHotspots() {
-    const container = document.getElementById('scene-hotspots');
-    container.innerHTML = '';
-
-    const coins = [
-      { id: 'scene3-coin1', style: { top: '80px',  left: '120px' } },
-      { id: 'scene3-coin2', style: { top: '200px', left: '850px' } },
-      { id: 'scene3-coin3', style: { top: '380px', left: '400px' } },
-    ];
-
-    coins.forEach(({ id, style }) => {
-      if (GameState.collectedCoins.scene3.has(id)) return;
-      const coin = document.createElement('div');
-      coin.className = 'hintcoin';
-      Object.assign(coin.style, style);
-      coin.addEventListener('click', (e) => {
-        e.stopPropagation();
-        GameState.collectedCoins.scene3.add(id);
-        GameState.addHintCoin();
-        gsap.to(coin, { scale: 1.6, opacity: 0, y: -35, duration: 0.5,
-          onComplete: () => coin.remove() });
-      });
-      container.appendChild(coin);
-    });
-  },
-
-  _showLocationTag(text) {
-    const tag = document.getElementById('scene-location-tag');
-    tag.textContent = text;
-    gsap.fromTo(tag,
-      { opacity: 0, y: -10 },
-      { opacity: 1, y: 0, duration: 0.5, delay: 0.3,
-        onComplete: () => gsap.to(tag, { opacity: 0, duration: 0.5, delay: 2.5 })
-      }
-    );
-  },
-
-  _onChefClick() {
-    if (GameState.puzzlesSolved.p4) return;
-    DialogueEngine.start([
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: "Mamma mia! You must help me! My ancestor, the great Oberix, left me his sacred recipe!" },
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: "But it is all scrambled! I cannot read the order! Tonight is the anniversary dinner — I am ruined!" },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Let us see it. Gabriel, take notes." },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "On it, Inspector." },
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: "Please, Detectives — the honour of the Oberix name depends on you!" },
-    ], () => {
-      Puzzle4Recipe.open();
-    });
-  },
-
-  // Called by Puzzle4Recipe on solve
-  onRecipeSolved() {
-    DialogueEngine.start([
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: "Perfetto! PERFETTO! That is exactly it! You have saved the Oberix legacy!" },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Our pleasure. Good luck tonight, Chef." },
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: "Please — stay! Eat! It is all on the house. A gift from the house of Oberix!" },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "Inspector... I think I have a confession to make." },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "Oh?" },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "The bridge. The pigeons. The map. The recipe. I... may have arranged all of it." },
-      { character: 'Inspector Dasha', portrait: 'dasha', side: 'right',
-        text: "...You organised all of this. For me." },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
-        text: "Happy Birthday, Inspector. You deserve every mystery." },
-    ], () => {
-      setTimeout(() => SceneEnd.init(), 800);
-    });
-  },
-};
-```
-
----
-
-## js/scenes/scene-end.js
-
-```javascript
-const SceneEnd = {
-
-  init() {
-    SceneManager.goTo('screen-end', () => {
-      this._render();
-    });
-  },
-
-  _render() {
-    const content = document.getElementById('end-content');
-    content.innerHTML = '';
-
-    // Happy Birthday title
-    const title = document.getElementById('end-title');
-    title.textContent = 'Happy Birthday, Dasha! 🎂';
-    gsap.from(title, { scale: 0.4, opacity: 0, duration: 0.9, ease: 'back.out(1.7)' });
-
-    // Character lineup
-    const lineup = document.getElementById('end-characters');
-    lineup.innerHTML = '';
-
-    const chars = [
-      { src: 'assets/characters/gabriel-fullbody-tourist.png', label: 'Gabriel' },
-      { src: 'assets/characters/dasha-fullbody-tourist.png',   label: 'Dasha'   },
-    ];
-
-    chars.forEach((ch, i) => {
-      const img = document.createElement('img');
-      img.src = ch.src;
-      img.alt = ch.label;
-      img.style.cssText = 'height:340px; width:auto; object-fit:contain;';
-      gsap.from(img, {
-        y: 80, opacity: 0, duration: 0.7,
-        delay: 0.5 + i * 0.2, ease: 'power2.out'
-      });
-      lineup.appendChild(img);
-    });
-
-    // Cat if found
-    if (GameState.catFound) {
-      const catDiv = document.createElement('div');
-      catDiv.style.cssText = 'font-size:60px; align-self:flex-end; margin-bottom:40px;';
-      catDiv.textContent = '🐱';
-      gsap.from(catDiv, { scale: 0, duration: 0.5, delay: 1.0, ease: 'back.out(2)' });
-      lineup.appendChild(catDiv);
-    }
-
-    // Message
-    const msg = document.getElementById('end-message');
-    msg.innerHTML = `
-      Every bridge, every pigeon, every mystery today was made for you.<br><br>
-      You are the world's greatest detective — and my favourite person.<br><br>
-      <em>Con amore,<br>Gabriel ${GameState.catFound ? '& the cat 🐱' : ''}</em>
-    `;
-    gsap.from(msg, { opacity: 0, y: 20, duration: 0.8, delay: 1.2 });
-
-    // Floating confetti emojis
-    const confetti = ['🎉','✨','🎂','💛','🎊','⭐','🌟'];
-    for (let i = 0; i < 18; i++) {
-      const el = document.createElement('div');
-      el.textContent = confetti[Math.floor(Math.random() * confetti.length)];
-      el.style.cssText = `
-        position:absolute;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        font-size: ${16 + Math.random() * 20}px;
-        opacity: 0;
-        pointer-events: none;
-      `;
-      document.getElementById('screen-end').appendChild(el);
-      gsap.fromTo(el,
-        { opacity: 0, y: 0 },
-        { opacity: 0.8, y: -(40 + Math.random() * 80),
-          duration: 2 + Math.random() * 2,
-          delay: Math.random() * 2,
-          repeat: -1, yoyo: true,
-          ease: 'sine.inOut'
-        }
-      );
     }
   },
 };
 ```
 
----
+## js/scenes/scene-intro.js
+Full BEATS array + _processBeat, _changeBackground, _showNarrator,
+_hideNarrator methods. Key points:
+- init() preloads all bg srcs in parallel, shows LoadingIndicator
+- _changeBackground also shows LoadingIndicator before preload
+- Narrator overlay: bottom gradient bar, typewriter text, click to advance
+- First click during typing: skips to full text, waits for second click
+- dialogue beats collected consecutively into one DialogueEngine.start call
+- On BEATS exhausted: _hideNarrator → Scene1Bridge.init()
 
-## js/puzzles/puzzle4-recipe.js
+## js/scenes/scene1-bridge.js — COMPLETE IMPLEMENTATION
+See Section 3 for all coordinates.
+Key methods: init, _setupZones, _setupHotspots, _showLocationTag,
+_showExclamation, _onKidsClick, _onGrandmaClick, _onGondolaLocked,
+_onGondolaClick, onPuzzleSolved
 
-```javascript
-const Puzzle4Recipe = {
+onPuzzleSolved() must call SceneManager.goTo FIRST, then
+_setupZones/_setupHotspots in callback, then dialogue.
 
-  // Order: index 0 = bottom of dish, index 5 = top
-  CORRECT_ORDER: [
-    'focaccia',
-    'tomato_sauce',
-    'mozzarella',
-    'prosciutto',
-    'basil',
-    'olive_oil'
-  ],
+## js/scenes/scene2-stmarco.js — COMPLETE IMPLEMENTATION
+See Section 3 for all coordinates and architecture notes.
+DEBUG: false in production.
 
-  LABELS: {
-    focaccia:     { display: '🍞 Focaccia',      color: '#c8a060' },
-    tomato_sauce: { display: '🍅 Salsa di Pomodoro', color: '#c04040' },
-    mozzarella:   { display: '🧀 Mozzarella',    color: '#f0f0e0' },
-    prosciutto:   { display: '🥩 Prosciutto',    color: '#c06050' },
-    basil:        { display: '🌿 Basilico',       color: '#40a060' },
-    olive_oil:    { display: '🫒 Olio d\'Oliva', color: '#b0c030' },
-  },
+## js/puzzles/puzzle1-crossing.js — COMPLETE IMPLEMENTATION
+layout: 'fullscreen'. Handles its own hints.
+PuzzleShell.triggerSubmit() called on auto-win.
+See Section 3 for full game logic and layout constants.
 
-  _currentOrder: [],
-  _selectedIndex: null,
+## js/puzzles/puzzle2-pigeons.js — COMPLETE IMPLEMENTATION
+Simple multiple choice. Answer: '11:59'.
+onSolve → Scene2StMarco.onPigeonsSolved()
 
-  open() {
-    // Shuffle the order for display
-    this._currentOrder = [...this.CORRECT_ORDER].sort(() => Math.random() - 0.5);
-    this._selectedIndex = null;
-
-    PuzzleShell.open({
-      id:     'p4',
-      number: '04',
-      title:  'La Ricetta Sacra',
-      description: `
-        <p>Chef Oberix's ancestor left this recipe — but the order is scrambled!</p>
-        <br>
-        <p>Arrange the ingredients in the correct order, from <strong>bottom to top</strong>:</p>
-        <br>
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:9px; font-size:15px;">
-          <li>📜 <em>"La focaccia va sul fondo."</em></li>
-          <li>📜 <em>"La salsa di pomodoro copre la base."</em></li>
-          <li>📜 <em>"La mozzarella riposa tra la salsa e il prosciutto."</em></li>
-          <li>📜 <em>"Il prosciutto non è sopra il basilico."</em></li>
-          <li>📜 <em>"Il basilico corona il tutto."</em></li>
-          <li>📜 <em>"L'olio d'oliva è l'ultimo tocco."</em></li>
-        </ul>
-        <br>
-        <p style="font-size:13px; color:#a09070;">
-          Click an ingredient to select it, then click another to swap them.
-        </p>
-      `,
-      hints: [
-        "Start with what you know for certain: focaccia is at the bottom, olive oil is at the top.",
-        "Tomato sauce 'covers the base' means it's directly above the focaccia.",
-        "Mozzarella is between tomato sauce and prosciutto. Basil crowns everything — it's second from top.",
-      ],
-      init:          (container) => this._render(container),
-      checkSolution: ()          => this._checkSolution(),
-      onSolve:       ()          => Scene3Restaurant.onRecipeSolved(),
-    });
-  },
-
-  _render(container) {
-    container.innerHTML = `
-      <style>
-        #recipe-wrap {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          padding: 12px;
-        }
-
-        #recipe-label-top {
-          font-size: 13px;
-          color: #a09070;
-          letter-spacing: 2px;
-          margin-bottom: 4px;
-        }
-
-        #recipe-list {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          width: 100%;
-          max-width: 460px;
-        }
-
-        .recipe-card {
-          padding: 14px 22px;
-          border-radius: 10px;
-          border: 2px solid rgba(200,160,32,0.3);
-          background: rgba(255,255,255,0.06);
-          color: #f5e8cc;
-          font-size: 18px;
-          cursor: pointer;
-          transition: all 0.15s;
-          user-select: none;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .recipe-card:hover {
-          background: rgba(255,255,255,0.12);
-          border-color: rgba(200,160,32,0.7);
-        }
-
-        .recipe-card.selected {
-          background: rgba(200,160,32,0.25);
-          border-color: #f0d060;
-          box-shadow: 0 0 14px rgba(240,208,80,0.4);
-          transform: scale(1.03);
-        }
-
-        .recipe-card .position-badge {
-          width: 24px; height: 24px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.1);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 12px; color: #a09070; flex-shrink: 0;
-        }
-
-        #recipe-label-bottom {
-          font-size: 13px;
-          color: #a09070;
-          letter-spacing: 2px;
-          margin-top: 4px;
-        }
-      </style>
-
-      <div id="recipe-wrap">
-        <div id="recipe-label-top">▲ TOP OF DISH</div>
-        <div id="recipe-list"></div>
-        <div id="recipe-label-bottom">▼ BOTTOM OF DISH</div>
-      </div>
-    `;
-
-    this._renderCards(container);
-  },
-
-  _renderCards(container) {
-    const list = container.querySelector('#recipe-list') ||
-                 document.getElementById('recipe-list');
-    if (!list) return;
-
-    list.innerHTML = '';
-
-    // Display from top to bottom visually (reverse of array order)
-    const displayOrder = [...this._currentOrder].reverse();
-
-    displayOrder.forEach((id, displayIndex) => {
-      const realIndex = this._currentOrder.length - 1 - displayIndex;
-      const info = this.LABELS[id];
-
-      const card = document.createElement('div');
-      card.className = 'recipe-card';
-      card.dataset.realIndex = realIndex;
-
-      card.innerHTML = `
-        <div class="position-badge">${realIndex + 1}</div>
-        <span style="color:${info.color}">${info.display}</span>
-      `;
-
-      if (this._selectedIndex === realIndex) {
-        card.classList.add('selected');
-      }
-
-      card.addEventListener('click', () => this._onCardClick(realIndex, list, container));
-      list.appendChild(card);
-    });
-  },
-
-  _onCardClick(realIndex, list, container) {
-    if (this._selectedIndex === null) {
-      // First click: select
-      this._selectedIndex = realIndex;
-      this._renderCards(container);
-    } else if (this._selectedIndex === realIndex) {
-      // Click same: deselect
-      this._selectedIndex = null;
-      this._renderCards(container);
-    } else {
-      // Second click: swap
-      const a = this._selectedIndex;
-      const b = realIndex;
-      [this._currentOrder[a], this._currentOrder[b]] =
-      [this._currentOrder[b], this._currentOrder[a]];
-      this._selectedIndex = null;
-      this._renderCards(container);
-      gsap.from('#recipe-list', { x: 5, duration: 0.08, repeat: 2, yoyo: true });
-    }
-  },
-
-  _checkSolution() {
-    return this._currentOrder.every((id, i) => id === this.CORRECT_ORDER[i]);
-  },
-};
-```
+## js/puzzles/puzzle3-map.js — COMPLETE IMPLEMENTATION
+Click destination. Answer: 'mestre'.
+onSolve → Scene2StMarco.onMapSolved()
+Zone coordinates need recalibration against actual map image.
 
 # ════════════════════════════════════════════════════════════
-# SECTION 7 — ASSET GENERATION GUIDE
+# SECTION 9 — REMAINING WORK (PRIORITY ORDER)
 # ════════════════════════════════════════════════════════════
 
-## Style anchor — use in EVERY character/sprite prompt
+1. js/scenes/scene3-restaurant.js
+   - Pattern identical to scene1-bridge.js and scene2-stmarco.js
+   - Background: scene3-restaurant.jpg
+   - Location tag: "Mestre — La Tana di Oberix"
+   - Chef sprite (baked or external)
+   - 3 hint coins (measure with calibration tool)
+   - Click chef → exclamation → dialogue → Puzzle4Recipe.open()
+   - onRecipeSolved() → dialogue → SceneEnd.init()
+
+2. js/puzzles/puzzle4-recipe.js
+   - 6 ingredient cards, randomised order on open
+   - Click to select, click another to swap
+   - Submit checks array order
+   - Uses standard PuzzleShell layout (NOT fullscreen)
+   - Sidebar shows clues in Italian parchment style
+   - See Section 3 for correct order and all clues
+
+3. js/scenes/scene-end.js
+   - Dark background + confetti GSAP floats
+   - "Happy Birthday, Dasha! 🎂" title with back.out spring
+   - Character images (tourist outfits)
+   - Cat emoji if GameState.catFound
+   - Birthday message from Gabriel
+
+4. Coordinate calibration for Scene 3
+   - Use click + C tool after scene3-restaurant.jpg is generated
+   - Measure chef zone + 3 coin positions
+
+5. Final playthrough
+   - Full game start to end
+   - All 4 puzzles solvable
+   - All dialogues fire
+   - All scene transitions work
+   - Gondola only clickable after p1 solved
+   - Carnival only appears after p2 solved
+   - Cat badge shows in all dialogues after finding cat
+
+6. Pre-gift checklist
+   - Remove debug-menu.js + script tag
+   - Remove DebugMenu.init() from game.js
+   - Remove calibration click/keyup helper from game.js
+   - Download gsap.min.js to js/lib/ and update src
+   - Test in Chrome + Firefox from zip
+   - Test window resize / fullscreen
+
+# ════════════════════════════════════════════════════════════
+# SECTION 10 — BUGS FIXED (DO NOT REINTRODUCE)
+# ════════════════════════════════════════════════════════════
+
+1. End screen showing on load
+   CAUSE: display:flex in CSS overrides .screen{display:none}
+   FIX: Never set display on screen divs in CSS. SceneManager handles it.
+
+2. Title screen stuck after click 2
+   CAUSE: orphaned gsap.delayedCall firing _startPulse, killing flash
+   FIX: store in _pulseDelay, kill on phase 2
+
+3. Portrait flipping before swap
+   CAUSE: class applied before new image loaded
+   FIX: opacity→0, apply class, set src, onload → opacity→1
+
+4. Scene zones not clickable
+   CAUSE: #scene-sprites parent has pointer-events:none
+   FIX: #scene-sprites > *, #scene-hotspots > * { pointer-events:auto }
+
+5. Characters disappearing when zones set up
+   CAUSE: _setupZones cleared #scene-sprites container
+   FIX: only _setupSprites clears, _setupZones just appends
+
+6. Black bar at bottom of puzzle screen
+   CAUSE: SceneManager set display:'block', breaking flex layout
+   FIX: flexScreens array in SceneManager sets display:'flex'
+
+7. Dialogue portrait double-firing click
+   CAUSE: both img and zone had click listeners
+   FIX: remove listener from img, zone handles all clicks
+
+8. DevTools coordinates wrong at scale
+   CAUSE: transform:scale() makes viewport px ≠ game px
+   FIX: calibration tool converts via getBoundingClientRect + scale factor
+
+9. Debug menu appears and vanishes instantly (AZERTY ²)
+   CAUSE: keydown fires twice rapidly on AZERTY
+   FIX: use keyup + cooldown flag
+
+10. Hint coins silently failing
+    CAUSE: GameState.collectedCoins.scene2 was undefined
+    FIX: ensure all three scene Sets exist in state.js initialisation
+
+# ════════════════════════════════════════════════════════════
+# SECTION 11 — ASSET GENERATION GUIDE
+# ════════════════════════════════════════════════════════════
+
+Style anchor for ALL characters/sprites:
 "Professor Layton video game art style, warm cel-shaded illustration,
 thick outlines, muted earthy palette with golden accents,
-transparent background (PNG), [DESCRIPTION]"
+transparent background PNG, [description]"
 
-## Character portraits (400×500px, PNG transparent)
-Generate idle + talk variant for each (talk = mouth open).
-Same pose, only mouth differs.
+Backgrounds: 1280×720px JPG
+Character portraits: 400×500px PNG transparent
+  Each needs -idle and -talk variant (talk = mouth open)
+  If only one version exists: duplicate file as both -idle and -talk
+In-scene sprites: PNG transparent, various sizes
+  After generation: autocrop with Pillow:
+    python3 -c "
+    from PIL import Image
+    img = Image.open('file.png').convert('RGBA')
+    img.crop(img.getbbox()).save('file.png')
+    "
 
-dasha-idle/talk:
-  "Sharp-featured woman in her 30s, short dark hair, detective trench coat,
-  confident slight smile, bust portrait, shoulders visible"
+Loading walk sprite: loading-walk.png
+  2400×712px, 4 frames side by side
+  Each frame: 600px wide
+  CSS: width:90px height:107px background-size:360px 107px
+  Keyframe: 0px → -360px (scaled 0.15× of original)
 
-gabriel-idle/talk:
-  "Young man early 20s, messy brown hair, apprentice detective vest and tie,
-  eager earnest expression, bust portrait"
-
-lady-idle/talk (Signora Rossi):
-  "Elderly Italian woman, bright red silk headscarf/veil, warm kind face,
-  gentle grandmother smile, bust portrait"
-
-tourist-idle/talk:
-  "Flustered middle-aged male tourist, Hawaiian shirt, two pigeons sitting
-  on his shoulders, wide panicked eyes, bust portrait"
-
-carnival-idle/talk:
-  "Mysterious Venice Carnival figure, ornate white Bauta mask pushed up
-  on forehead, elaborate gold-trimmed costume, one eye visible,
-  enigmatic half-smile, bust portrait"
-
-chef-idle/talk (Chef Oberix):
-  "Dramatic Italian chef, tall white toque hat, tomato-stained apron,
-  holding crumpled paper recipe, sweating, extremely worried expression,
-  bust portrait"
-
-cat-idle/talk:
-  "Small grey street cat, bright green eyes, sitting upright,
-  slightly judgmental expression. Talk variant: mouth open, tiny pink tongue"
-
-kid-idle/talk:
-  "Italian child approximately 8 years old, school uniform,
-  curious wide eyes, slightly worried expression"
-
-## Full body title screen characters (300×650px, PNG transparent)
-dasha-fullbody-normal:
-  "Full body standing pose, same Dasha character, detective trench coat
-  and hat, confident pose, arms loosely crossed"
-
-gabriel-fullbody-normal:
-  "Full body standing pose, same Gabriel character, apprentice vest,
-  one hand raised slightly, eager stance"
-
-dasha-fullbody-tourist:
-  "Same Dasha, full body, now in tourist outfit: fanny pack, oversized
-  sunglasses pushed up on head, rolled-up map under arm, still trying
-  to look dignified and serious"
-
-gabriel-fullbody-tourist:
-  "Same Gabriel, full body, now in tourist outfit: bright bucket hat,
-  camera on strap around neck, travel guidebook in hand, huge grin"
-
-## In-scene sprites (PNG transparent)
-scene-group-bridge (~220×320px):
-  "Elderly Italian woman in red headscarf with three young children
-  gathered around her, all looking lost and worried, standing together,
-  full body group illustration"
-
-scene-cat (~90×70px):
-  "Small grey cat sitting on a stone surface, looking sideways with
-  curiosity, side-on view, full body"
-
-scene-gondola (~220×160px):
-  "Venetian wooden gondola with gondolier standing at the stern with
-  pole, docked beside a canal wall, side view, water ripple hints"
-
-scene-tourist-birds (~170×300px):
-  "Flustered tourist full body, Hawaiian shirt, multiple pigeons
-  perched on outstretched arms, shoulders, and head, looking skyward
-  in panic"
-
-scene-carnival (~160×300px):
-  "Venice Carnival figure full body, white mask and elaborate costume,
-  holding an ornate decorated gift box, mysterious still pose"
-
-scene-chef (~160×300px):
-  "Italian chef full body, tall toque hat, apron, holding a crumpled
-  old recipe paper in both hands, sweating, distressed expression"
-
-## Map (700×500px, special style)
-map-venice.png:
-  "Illustrated vintage treasure map style, top-down view, Venice lagoon
-  Italy. Shows: Venice island (center), Murano island (north-east),
-  Burano island (far north-east), Lido di Venezia (long narrow island
-  south-east), Mestre on mainland (west, connected by bridge).
-  Warm parchment tones, hand-drawn coastlines, small landmark icons,
-  Italian location labels. No photograph, no satellite view."
-
-## Backgrounds (1280×720px, JPG)
-scene1-venice-bridge.jpg:
-  "Venice canal, stone bridge with wooden scaffolding and red-and-white
-  'CHIUSO' barrier tape, gondola docked on the right side, ancient
-  buildings either side, warm late-afternoon golden light, painterly
-  illustration style"
-
-scene2-stmarco.jpg:
-  "St Mark's Square Venice (Piazza San Marco), ornate basilica in the
-  background, dozens of pigeons on the cobblestones, tourists visible,
-  warm golden hour light, wide establishing shot, painterly"
-
-transition-train.jpg:
-  "Interior of an Italian regional Trenitalia train, two seats visible,
-  window showing blurred Italian countryside passing, warm afternoon
-  light through window, slightly nostalgic painterly style"
-
-scene3-restaurant.jpg:
-  "Interior of a cozy rustic Italian trattoria, wooden tables with
-  checked tablecloths, wine bottles on shelves, warm candlelight,
-  slightly cluttered but charming, empty tables suggesting it's not
-  yet service time, painterly style"
-
-## IMPORTANT calibration step after generating map-venice.png
-Open the image in any viewer. Note the pixel X,Y coordinates of the
-center of each location label. Update the ZONES array in puzzle3-map.js:
-  const Puzzle3Map = { ZONES: [ { id:'mestre', x:??, y:??, w:100, h:60 }, ... ] }
-The coordinates are pixel positions on a 700×500 image.
+Map image: map-venice.png 700×500px
+  Vintage parchment treasure map style (NOT Layton style)
+  Shows: Venice island center, Murano NE, Burano far NE,
+         Lido SE, Mestre WEST on mainland
+  After generation: measure zone pixel positions and update
+  Puzzle3Map.ZONES array coordinates
 
 # ════════════════════════════════════════════════════════════
-# SECTION 8 — KEY IMPLEMENTATION NOTES & DECISIONS
+# SECTION 12 — RESPONSE GUIDELINES FOR AI AGENT
 # ════════════════════════════════════════════════════════════
 
-## Dialogue Engine conventions
-- portrait name maps to: assets/characters/{name}-idle.png and {name}-talk.png
-- side: 'left' = portrait appears on left, 'right' = on right
-- The DialogueEngine swaps between -idle and -talk at 190ms interval during typing
-- Clicking advances line; if still typing, first click skips to full text
-- Cat companion icon 🐱 shows in dialogue box when GameState.catFound === true
+ALWAYS:
+- Make surgical changes. Specify file + method + what changes.
+- Respect all coordinates the user provides — never estimate them.
+- Use 'guy' as portrait key for the tourist (maps to guy-idle/talk.png)
+- Keep all Italian location names in displayed text
+- Keep JS object names unchanged (Scene2StMarco, etc.)
+- Respect the zones→#scene-sprites, coins→#scene-hotspots architecture
+- When asked to "rewrite the whole file" — do it completely, no stubs
+- Use top+left for sprite positioning (never bottom for new positions)
 
-## PuzzleShell conventions
-- Each puzzle module exposes one public method: open()
-- open() calls PuzzleShell.open(config)
-- config.init(container) injects all puzzle-specific HTML/CSS into right panel
-- config.checkSolution() returns boolean — called on Submit
-- config.onSolve() is called after player clicks Continue on success overlay
-- Hint coins cost 1 GameState.hintCoins per hint
-- If no hint coins: shake animation + console message (no toast yet)
-- Incorrect answer: red overlay with shake animation, player can retry freely
+NEVER:
+- Use emoji in UI chrome (buttons, labels, advance arrow)
+  Exception: puzzle text content is fine
+- Add display:flex or display:block to any .screen in CSS
+- Clear #scene-sprites inside _setupZones
+- Put click listeners on sprite img elements (zones handle clicks)
+- Estimate coordinate positions — wait for user measurement
+- Use markdown links or footnote citations
+- Rewrite a full file when a 3-line surgical change would do
 
-## SceneManager conventions
-- SceneManager.goTo(screenId, callback)
-- callback fires after the fade-in animation completes
-- HUD (#hud) is shown automatically for 'screen-scene' and 'screen-puzzle'
-- HUD is hidden for all other screens
-
-## Sprite and hotspot re-render pattern
-Each scene's _setupSprites() and _setupHotspots() reads GameState
-and renders the correct version of the scene. Called:
-  1. On scene init
-  2. After a puzzle is solved (via onPuzzleSolved/onSomethingSolved callback)
-Always clears innerHTML before re-rendering to avoid duplicates.
-
-## CSS display conventions
-- .screen { display: none } — all screens hidden by default
-- SceneManager sets display:block when showing a screen
-- #screen-intro needs `display: none` explicitly (NOT display:flex in CSS)
-- #screen-end: do NOT put display:flex in CSS — SceneManager handles it
-  #end-content uses position:absolute + transform:translate(-50%,-50%) for centering
-
-## GSAP usage patterns
-- Slide in from side:  gsap.from(el, { x: -200, opacity: 0, duration: 0.7 })
-- Fade in:            gsap.fromTo(el, { opacity:0 }, { opacity:1, duration:0.5 })
-- Shake (wrong):      gsap.to(el, { x:8, duration:0.07, repeat:5, yoyo:true })
-- Bounce (coin):      gsap.fromTo(el, {scale:1.35}, {scale:1, duration:0.4, ease:'back.out(2)'})
-- Float loop:         gsap.to(el, { y:-9, duration:2.4, repeat:-1, yoyo:true, ease:'sine.inOut' })
-- Disappear:          gsap.to(el, { scale:1.6, opacity:0, y:-35, duration:0.5, onComplete: ()=>el.remove() })
-
-## Puzzle 1 — River crossing solution path (verified)
-The 3+3 Missionaries-and-Cannibals problem. One valid solution:
-1. Send Kid1 + Kid2 to B
-2. Bring Kid1 back to A
-3. Send Kid2 + Kid3 to B
-4. Bring Kid2 back to A
-5. Send Dasha + Gabriel to B
-6. Bring Kid3 + Kid2 back to A  (NOTE: an adult must come back with kids here)
-   Wait — let me use the canonical correct solution:
-1. Send Gabriel + Dasha → B
-2. Bring Gabriel ← A
-3. Send Gabriel + Signora → B
-4. Bring Gabriel ← A
-5. Send Kid1 + Kid2 → B
-6. Bring Signora + Kid1 ← A
-7. Send Gabriel + Kid1 → B
-8. Bring Gabriel ← A
-9. Send Gabriel + Kid3 → B (now B has Dasha, Signora, Kid2, Kid1, Kid3 — oops)
-Use the proper validated sequence — the constraint checker in code will
-tell the player when a move is invalid. The puzzle is self-correcting.
-The validator in _isValidBank() is the source of truth.
-
-## Puzzle 3 — Map zone coordinates
-The ZONES array in puzzle3-map.js has placeholder coordinates.
-MUST be updated after generating map-venice.png.
-Mestre MUST be the correct answer (id: 'mestre').
-Ensure Mestre is clearly on the mainland (left/west) of the map.
-
-## Puzzle 4 — Recipe correct order
-Bottom to top: focaccia → tomato_sauce → mozzarella → prosciutto → basil → olive_oil
-Display is reversed (top of screen = top of dish).
-checkSolution compares currentOrder array (index 0 = bottom) to CORRECT_ORDER.
-
-# ════════════════════════════════════════════════════════════
-# SECTION 9 — BUILD CHECKLIST & REMAINING WORK
-# ════════════════════════════════════════════════════════════
-
-## Priority order for remaining sessions
-
-SESSION: Saturday morning
-[ ] Fix CSS bug: remove display:flex from #screen-end, add absolute positioning to #end-content
-[ ] Verify title screen → intro → scene1 flow works with placeholder images
-[ ] Generate all assets with Gemini (one focused session)
-[ ] Update map zone coordinates after generating map-venice.png
-
-SESSION: Saturday afternoon
-[ ] Paste scene2-stmarco.js full implementation (from this file)
-[ ] Paste scene3-restaurant.js full implementation (from this file)
-[ ] Paste scene-end.js full implementation (from this file)
-[ ] Paste puzzle4-recipe.js full implementation (from this file)
-[ ] Replace placeholder colors/divs with real image files as they are generated
-
-SESSION: Sunday
-[ ] Full walkthrough test: title → end, all puzzles, all dialogues
-[ ] Verify Puzzle 1 is solvable (walk through manually)
-[ ] Verify Puzzle 3 map zones match actual image positions
-[ ] Verify Puzzle 4 correct order matches CORRECT_ORDER array
-[ ] Verify cat easter egg shows 🐱 in all subsequent dialogues
-[ ] Verify hint coin spending works in puzzles
-[ ] Verify hint coins cannot be double-collected
-
-SESSION: Monday
-[ ] GSAP polish pass: review all transition timings
-[ ] Test on a fresh browser tab (no cache)
-[ ] Test window resize (scale should adjust)
-[ ] Check all image paths are correct (case-sensitive on Linux/Codespaces)
-[ ] Add any missing dialogue lines
-
-SESSION: Tuesday
-[ ] Final full playthrough
-[ ] Zip the entire layton-dasha/ folder
-[ ] Verify zip opens correctly in Chrome and Firefox
-[ ] Gift delivery
-
-## Known issues to watch for
-- Image paths are case-sensitive in Codespaces (Linux). Keep all filenames lowercase.
-- GSAP from CDN requires internet connection. Game will not work offline without
-  downloading gsap.min.js locally. Consider copying it to js/lib/gsap.min.js
-  and updating the script src in index.html for offline gifting.
-- The dialogue overlay uses display:flex set inline by DialogueEngine.
-  Do not set display:none or display:flex on #dialogue-overlay in CSS.
-- All scene modules clear #scene-sprites and #scene-hotspots innerHTML on re-render.
-  Never store references to those child elements across re-renders.
-
-# ════════════════════════════════════════════════════════════
-# SECTION 10 — GSAP OFFLINE FALLBACK
-# ════════════════════════════════════════════════════════════
-
-If the game will be gifted as a local zip (no guaranteed internet):
-1. Download: https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js
-2. Save to: js/lib/gsap.min.js
-3. In index.html, replace:
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-   with:
-     <script src="js/lib/gsap.min.js"></script>
+WHEN UNSURE:
+- State assumption clearly
+- Ask only the single most important clarifying question
+- Default to the pattern already established in scene1-bridge.js
+  and scene2-stmarco.js
 
 # ════════════════════════════════════════════════════════════
 # END OF CONTEXT PROMPT
 # ════════════════════════════════════════════════════════════
+```

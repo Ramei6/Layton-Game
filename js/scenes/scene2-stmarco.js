@@ -6,8 +6,8 @@ const Scene2StMarco = {
     SceneManager.goTo(
       'screen-scene',
       () => {
-        this._setupSprites();   // clears #scene-sprites, adds characters + zones
-        this._setupHotspots();  // clears #scene-hotspots, adds coins
+        this._setupSprites();
+        this._setupHotspots();
         this._showLocationTag('Venice — Piazza San Marco');
       },
       'assets/backgrounds/smbg.png'
@@ -15,46 +15,45 @@ const Scene2StMarco = {
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // SPRITES + ZONES
-  // Both go into #scene-sprites. Sprites first, zones on top.
-  // _setupSprites() clears the container — _setupZones() does NOT.
+  // SPRITES
+  // Clears #scene-sprites, adds all visible images, then appends zones.
   // ══════════════════════════════════════════════════════════════════
 
   _setupSprites() {
     const container = document.getElementById('scene-sprites');
-    container.innerHTML = '';   // ← single clear, here only
+    container.innerHTML = '';   // single clear — here only
 
     // ── Dog — always visible, mirrored ──────────────────────────────
     const dog = document.createElement('img');
-    dog.src   = 'assets/sprites/dog.png';
-    dog.id    = 'sprite-dog';
+    dog.src = 'assets/sprites/dog.png';
+    dog.id  = 'sprite-dog';
     Object.assign(dog.style, {
       position:  'absolute',
-      height:    '200px',
+      height:    '160px',
       width:     'auto',
-      bottom:    '120px',
-      left:      '300px',
+      top:       '475px',
+      left:      '462px',
       filter:    'drop-shadow(1px 3px 6px rgba(0,0,0,0.5))',
-      transform: 'scaleX(-1)',   // mirrored
+      transform: 'scaleX(-1)',
       zIndex:    '8',
-      cursor:    'default',      // zone handles clicks
+      cursor:    'default',
     });
     container.appendChild(dog);
 
-    // ── Tourist (animated 2 frames) — hidden after puzzle 2 ─────────
+    // ── Tourist (animated) — hidden after puzzle 2 solved ────────────
     if (!GameState.puzzlesSolved.p2) {
       const tourist = document.createElement('img');
       tourist.src = 'assets/sprites/guyf1.png';
       tourist.id  = 'sprite-tourist';
       Object.assign(tourist.style, {
         position: 'absolute',
-        height:   '800px',
+        height:   '650px',
         width:    'auto',
-        bottom:   '-10px',
-        left:     '500px',
+        top:      '100px',
+        left:     '700px',
         filter:   'drop-shadow(2px 4px 8px rgba(0,0,0,0.5))',
         zIndex:   '9',
-        cursor:   'default',     // zone handles clicks, NOT the img
+        cursor:   'default',     // zone handles clicks, not the img
       });
 
       this._animateSprite(tourist, [
@@ -70,14 +69,17 @@ const Scene2StMarco = {
       this._spawnCarnival(container);
     }
 
-    // ── Invisible click zones (appended after sprites) ───────────────
+    // ── Invisible click zones — appended after sprites ───────────────
     this._setupZones(container);
   },
 
-  _setupZones(container) {
-    // container = #scene-sprites — already cleared by _setupSprites()
-    // Do NOT clear here — sprites are already in it
+  // ══════════════════════════════════════════════════════════════════
+  // ZONES
+  // Receives the already-cleared container from _setupSprites().
+  // Does NOT clear container — sprites are already in it.
+  // ══════════════════════════════════════════════════════════════════
 
+  _setupZones(container) {
     const makeZone = (id, style, color) => {
       const zone = document.createElement('div');
       zone.id = id;
@@ -85,8 +87,8 @@ const Scene2StMarco = {
         position:      'absolute',
         cursor:        'pointer',
         pointerEvents: 'auto',
-        background:    this.DEBUG ? `rgba(${color},0.3)`            : 'transparent',
-        outline:       this.DEBUG ? `2px solid rgba(${color},0.9)`  : 'none',
+        background:    this.DEBUG ? `rgba(${color},0.3)`           : 'transparent',
+        outline:       this.DEBUG ? `2px solid rgba(${color},0.9)` : 'none',
         zIndex:        '20',
         ...style,
       });
@@ -94,31 +96,35 @@ const Scene2StMarco = {
       return zone;
     };
 
-    // Tourist zone — upper body only, not the full 800px sprite
+    // Tourist zone — tune left/top/width/height after autocrop
     if (!GameState.puzzlesSolved.p2) {
       const z = makeZone('zone-tourist', {
-        left:   '600px',
-        top:    '300px',
-        width:  '150px',
-        height: '250px',
+        left:   '770px',
+        top:    '380px',
+        width:  '180px',
+        height: '320px',
       }, '255,165,0');
       z.addEventListener('click', () => this._onTouristClick());
       container.appendChild(z);
     }
 
-    // Dog zone
+    // Dog zone — derived from center (359, 601)
     const dz = makeZone('zone-dog', {
-      left:   '310px',
-      top:    '450px',
+      left:   '460px',
+      top:    '510px',
       width:  '80px',
-      height: '100px',
+      height: '80px',
     }, '0,200,100');
     dz.addEventListener('click', () => this._onDogClick());
     container.appendChild(dz);
   },
 
+  // ══════════════════════════════════════════════════════════════════
+  // CARNIVAL
+  // Called by _setupSprites() or onPigeonsSolved()
+  // ══════════════════════════════════════════════════════════════════
+
   _spawnCarnival(container) {
-    // container = #scene-sprites passed from _setupSprites
     const carnival = document.createElement('img');
     carnival.src   = 'assets/sprites/scene-carnival.png';
     carnival.id    = 'sprite-carnival';
@@ -148,12 +154,12 @@ const Scene2StMarco = {
 
   _setupHotspots() {
     const container = document.getElementById('scene-hotspots');
-    container.innerHTML = '';   // ← clears any leftover coins from previous scene
+    container.innerHTML = '';
 
     const coins = [
-      { id: 'scene2-coin1', style: { top: '30px',  left: '380px' } },
-      { id: 'scene2-coin2', style: { top: '220px', left: '235px' } },
-      { id: 'scene2-coin3', style: { top: '200px', left: '495px' } },
+      { id: 'scene2-coin1', style: { top: '262px', left: '334px' } },
+      { id: 'scene2-coin2', style: { top: '41px',  left: '510px' } },
+      { id: 'scene2-coin3', style: { top: '63px',  left: '890px' } },
     ];
 
     coins.forEach(({ id, style }) => {
@@ -201,8 +207,8 @@ const Scene2StMarco = {
   _animateSprite(imgEl, frames, fps = 3) {
     let current = 0;
     const timer = setInterval(() => {
-      current     = (current + 1) % frames.length;
-      imgEl.src   = frames[current];
+      current   = (current + 1) % frames.length;
+      imgEl.src = frames[current];
     }, 1000 / fps);
     imgEl._animTimer = timer;
   },
@@ -231,8 +237,8 @@ const Scene2StMarco = {
     el.id = 'exclamation-mark-sm';
     Object.assign(el.style, {
       position:       'absolute',
-      left:           '620px',
-      top:            '285px',
+      left:           '820px',
+      top:            '415px',
       width:          '38px',
       height:         '38px',
       borderRadius:   '50%',
@@ -257,9 +263,13 @@ const Scene2StMarco = {
         onComplete: () => {
           gsap.to(el, { scale: 1, duration: 0.1,
             onComplete: () => {
-              gsap.to(el, { y: -5, duration: 0.35, repeat: 2, yoyo: true, ease: 'sine.inOut' });
               gsap.to(el, {
-                y: -22, opacity: 0, duration: 0.35, delay: 0.9, ease: 'power1.in',
+                y: -5, duration: 0.35, repeat: 2,
+                yoyo: true, ease: 'sine.inOut',
+              });
+              gsap.to(el, {
+                y: -22, opacity: 0, duration: 0.35,
+                delay: 0.9, ease: 'power1.in',
                 onComplete: () => { el.remove(); if (onComplete) onComplete(); },
               });
             },
@@ -278,15 +288,20 @@ const Scene2StMarco = {
 
     this._showExclamation(() => {
       DialogueEngine.start([
-        { character: 'Tourist',            portrait: 'guy',     side: 'left',
+        { character: 'Tourist',
+          portrait: 'guy', side: 'left',
           text: '"Help! HELP! They just keep coming! I only had a sandwich!"' },
-        { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+        { character: 'Inspector Dasha',
+          portrait: 'dasha', side: 'right',
           text: '"Sir, calm down. How long have you been standing there?"' },
-        { character: 'Tourist',            portrait: 'guy',     side: 'left',
+        { character: 'Tourist',
+          portrait: 'guy', side: 'left',
           text: '"Since 10am! The square is completely full at noon — I need to know when to run!"' },
-        { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+        { character: 'Apprentice Gabriel',
+          portrait: 'gabriel', side: 'right',
           text: '"Each bird calls another and they arrive one per minute... this is a doubling problem!"' },
-        { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+        { character: 'Inspector Dasha',
+          portrait: 'dasha', side: 'right',
           text: '"Precisely. Gabriel — if the square is full at 12:00, when is it half full?"' },
       ], () => Puzzle2Pigeons.open());
     });
@@ -294,9 +309,11 @@ const Scene2StMarco = {
 
   _onDogClick() {
     DialogueEngine.start([
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+      { character: 'Gabriel',
+        portrait: 'gabriel', side: 'right',
         text: '"Inspector, I think this dog is also investigating something."' },
-      { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+      { character: 'Dasha',
+        portrait: 'dasha', side: 'right',
         text: '"Leave it to Venice to have its own detective dog."' },
     ], () => { });
   },
@@ -305,17 +322,23 @@ const Scene2StMarco = {
     if (GameState.puzzlesSolved.p3) return;
 
     DialogueEngine.start([
-      { character: '???',                portrait: 'carnival', side: 'left',
+      { character: '???',
+        portrait: 'carnival', side: 'left',
         text: '"Brava, Detectives. Most impressive."' },
-      { character: 'Inspector Dasha',    portrait: 'dasha',    side: 'right',
+      { character: 'Inspector Dasha',
+        portrait: 'dasha', side: 'right',
         text: '"Who are you?"' },
-      { character: '???',                portrait: 'carnival', side: 'left',
+      { character: '???',
+        portrait: 'carnival', side: 'left',
         text: '"A friend. I have been watching your deductions with great interest."' },
-      { character: '???',                portrait: 'carnival', side: 'left',
+      { character: '???',
+        portrait: 'carnival', side: 'left',
         text: '"Consider this a gift. It will show you exactly where your next adventure begins."' },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel',  side: 'right',
+      { character: 'Apprentice Gabriel',
+        portrait: 'gabriel', side: 'right',
         text: '"A... map?"' },
-      { character: '???',                portrait: 'carnival', side: 'left',
+      { character: '???',
+        portrait: 'carnival', side: 'left',
         text: '"Buona fortuna, Ispettore."' },
     ], () => Puzzle3Map.open());
   },
@@ -326,16 +349,19 @@ const Scene2StMarco = {
 
   onPigeonsSolved() {
     DialogueEngine.start([
-      { character: 'Tourist',            portrait: 'guy',     side: 'left',
+      { character: 'Tourist',
+        portrait: 'guy', side: 'left',
         text: '"11:59?! I have been here since 10am for THIS?! I need to leave NOW!"' },
-      { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+      { character: 'Inspector Dasha',
+        portrait: 'dasha', side: 'right',
         text: '"Run, sir. Run now."' },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+      { character: 'Apprentice Gabriel',
+        portrait: 'gabriel', side: 'right',
         text: '"Inspector... there is someone watching us from the far end of the square."' },
     ], () => {
       GameState.puzzlesSolved.p2 = true;
 
-      // Kill animation timer and fade out tourist
+      // Kill animation and remove tourist sprite
       const tourist = document.getElementById('sprite-tourist');
       if (tourist) {
         if (tourist._animTimer) clearInterval(tourist._animTimer);
@@ -349,7 +375,7 @@ const Scene2StMarco = {
       const zone = document.getElementById('zone-tourist');
       if (zone) zone.remove();
 
-      // Spawn carnival character
+      // Spawn carnival
       const container = document.getElementById('scene-sprites');
       this._spawnCarnival(container);
     });
@@ -357,11 +383,14 @@ const Scene2StMarco = {
 
   onMapSolved() {
     DialogueEngine.start([
-      { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+      { character: 'Inspector Dasha',
+        portrait: 'dasha', side: 'right',
         text: '"Mestre. Of course — just across the Ponte della Libertà."' },
-      { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+      { character: 'Apprentice Gabriel',
+        portrait: 'gabriel', side: 'right',
         text: '"La Tana di Oberix... do you know it, Inspector?"' },
-      { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+      { character: 'Inspector Dasha',
+        portrait: 'dasha', side: 'right',
         text: '"I know we need to take the train. Come on, Detective."' },
     ], () => this._trainTransition());
   },
@@ -390,11 +419,14 @@ const Scene2StMarco = {
               this._showLocationTag('Venice → Mestre — On the Train');
               setTimeout(() => {
                 DialogueEngine.start([
-                  { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+                  { character: 'Apprentice Gabriel',
+                    portrait: 'gabriel', side: 'right',
                     text: '"I still cannot believe we are working on your birthday trip."' },
-                  { character: 'Inspector Dasha',    portrait: 'dasha',   side: 'right',
+                  { character: 'Inspector Dasha',
+                    portrait: 'dasha', side: 'right',
                     text: '"We are not working. We are having an adventure. There is a difference."' },
-                  { character: 'Apprentice Gabriel', portrait: 'gabriel', side: 'right',
+                  { character: 'Apprentice Gabriel',
+                    portrait: 'gabriel', side: 'right',
                     text: '"Of course, Inspector."' },
                 ], () => setTimeout(() => Scene3Restaurant.init(), 1000));
               }, 800);

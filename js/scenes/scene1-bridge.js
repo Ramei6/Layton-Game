@@ -36,7 +36,7 @@ const Scene1Bridge = {
     // ── Grandma zone ────────────────────────────────────────────────
     if (!GameState.puzzlesSolved.p1) {
       const z = makeZone('zone-grandma', {
-        left: '475px', top: '220px', width: '95px', height: '195px',
+        left: '570px', top: '280px', width: '59px', height: '156px',
       }, '255,0,0');
       z.addEventListener('click', () => this._onGrandmaClick());
       container.appendChild(z);
@@ -45,7 +45,7 @@ const Scene1Bridge = {
     // ── Kids zone ───────────────────────────────────────────────────
     if (!GameState.puzzlesSolved.p1) {
       const z = makeZone('zone-kids', {
-        left: '725px', top: '295px', width: '160px', height: '175px',
+        left: '862px', top: '350px', width: '131px', height: '143px',
       }, '255,0,0');
       z.addEventListener('click', () => this._onKidsClick());
       container.appendChild(z);
@@ -53,10 +53,10 @@ const Scene1Bridge = {
 
     // ── Gondola zone ────────────────────────────────────────────────
     const gz = makeZone('zone-gondola', {
-      left:   '700px',
-      top:    '205px',
-      width:  '190px',
-      height: '115px',
+      left:   '850px',
+      top:    '288px',
+      width:  '134px',
+      height: '42px',
       cursor: GameState.gondolaUnlocked ? 'pointer' : 'default',
     }, '0,100,255');
     gz.addEventListener('click', () => {
@@ -72,9 +72,9 @@ const Scene1Bridge = {
     container.innerHTML = '';
 
     const coins = [
-      { id: 'scene1-coin1', style: { top: '165px', left: '0px' } },
-      { id: 'scene1-coin2', style: { top: '195px', left: '610px'  } },
-      { id: 'scene1-coin3', style: { top: '100px',  left: '900px'} },
+      { id: 'scene1-coin1', style: { top: '210px', left: '12px' } },
+      { id: 'scene1-coin2', style: { top: '216px', left: '718px'  } },
+      { id: 'scene1-coin3', style: { top: '100px',  left: '1050px'} },
     ];
 
     coins.forEach(({ id, style }) => {

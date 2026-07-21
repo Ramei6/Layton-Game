@@ -25,7 +25,7 @@ const DialogueEngine = {
   _clickHandler: null,
 
   // Portraits that face left by default and need mirroring
-  MIRRORED_PORTRAITS: new Set(['gabriel']),
+  MIRRORED_PORTRAITS: new Set(['gabriel', 'guy']),
   NO_TALK_ANIM: new Set(['lady', 'kid']),  // portraits with idle-only assets
 
   start(lines, onComplete) {
@@ -85,7 +85,7 @@ if (line.portrait) {
 
     // 3. Set new source
     portraitImg.src = `assets/characters/${line.portrait}-talk.png`;
-
+    
     // 4. Reveal only once the new image has actually loaded
     portraitImg.onload = () => {
       gsap.to(portraitImg, { opacity: 1, duration: 0.12, ease: 'none' });
