@@ -8,22 +8,22 @@ const Scene2StMarco = {
       () => {
         this._setupSprites();
         this._setupHotspots();
-        this._showLocationTag('Venice — Piazza San Marco');
+        this._showLocationTag('Venice - Piazza San Marco');
       },
       'assets/backgrounds/smbg.png'
     );
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // SPRITES
   // Clears #scene-sprites, adds all visible images, then appends zones.
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _setupSprites() {
     const container = document.getElementById('scene-sprites');
-    container.innerHTML = '';   // single clear — here only
+    container.innerHTML = '';   // single clear - here only
 
-    // ── Dog — always visible, mirrored ──────────────────────────────
+    // -- Dog - always visible, mirrored ------------------------------
     const dog = document.createElement('img');
     dog.src = 'assets/sprites/dog.png';
     dog.id  = 'sprite-dog';
@@ -40,7 +40,7 @@ const Scene2StMarco = {
     });
     container.appendChild(dog);
 
-    // ── Tourist (animated) — hidden after puzzle 2 solved ────────────
+    // -- Tourist (animated) - hidden after puzzle 2 solved ------------
     if (!GameState.puzzlesSolved.p2) {
       const tourist = document.createElement('img');
       tourist.src = 'assets/sprites/guyf1.png';
@@ -64,20 +64,20 @@ const Scene2StMarco = {
       container.appendChild(tourist);
     }
 
-    // ── Carnival — only after p2 solved, before p3 solved ───────────
+    // -- Carnival - only after p2 solved, before p3 solved -----------
     if (GameState.puzzlesSolved.p2 && !GameState.puzzlesSolved.p3) {
       this._spawnCarnival(container);
     }
 
-    // ── Invisible click zones — appended after sprites ───────────────
+    // -- Invisible click zones - appended after sprites ---------------
     this._setupZones(container);
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // ZONES
   // Receives the already-cleared container from _setupSprites().
-  // Does NOT clear container — sprites are already in it.
-  // ══════════════════════════════════════════════════════════════════
+  // Does NOT clear container - sprites are already in it.
+  // ==================================================================
 
   _setupZones(container) {
     const makeZone = (id, style, color) => {
@@ -96,7 +96,7 @@ const Scene2StMarco = {
       return zone;
     };
 
-    // Tourist zone — tune left/top/width/height after autocrop
+    // Tourist zone - tune left/top/width/height after autocrop
     if (!GameState.puzzlesSolved.p2) {
       const z = makeZone('zone-tourist', {
         left:   '770px',
@@ -108,7 +108,7 @@ const Scene2StMarco = {
       container.appendChild(z);
     }
 
-    // Dog zone — derived from center (359, 601)
+    // Dog zone - derived from center (359, 601)
     const dz = makeZone('zone-dog', {
       left:   '460px',
       top:    '510px',
@@ -119,10 +119,10 @@ const Scene2StMarco = {
     container.appendChild(dz);
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // CARNIVAL
   // Called by _setupSprites() or onPigeonsSolved()
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _spawnCarnival(container) {
     const carnival = document.createElement('img');
@@ -148,9 +148,9 @@ const Scene2StMarco = {
     );
   },
 
-  // ══════════════════════════════════════════════════════════════════
-  // HINT COINS — #scene-hotspots only
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
+  // HINT COINS - #scene-hotspots only
+  // ==================================================================
 
   _setupHotspots() {
     const container = document.getElementById('scene-hotspots');
@@ -200,9 +200,9 @@ const Scene2StMarco = {
     });
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // SPRITE FRAME CYCLER
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _animateSprite(imgEl, frames, fps = 3) {
     let current = 0;
@@ -213,9 +213,9 @@ const Scene2StMarco = {
     imgEl._animTimer = timer;
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // LOCATION TAG
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _showLocationTag(text) {
     const tag = document.getElementById('scene-location-tag');
@@ -228,9 +228,9 @@ const Scene2StMarco = {
     );
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // EXCLAMATION MARK
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _showExclamation(onComplete) {
     const el = document.createElement('div');
@@ -279,9 +279,9 @@ const Scene2StMarco = {
     );
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // CLICK HANDLERS
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _onTouristClick() {
     if (GameState.puzzlesSolved.p2) return;
@@ -290,19 +290,16 @@ const Scene2StMarco = {
       DialogueEngine.start([
         { character: 'Tourist',
           portrait: 'guy', side: 'left',
-          text: '"Help! HELP! They just keep coming! I only had a sandwich!"' },
-        { character: 'Inspector Dasha',
+          text: 'Help! I dropped my piece of focaccia and they are swarming me!' },
+        { character: 'Dasha',
           portrait: 'dasha', side: 'right',
-          text: '"Sir, calm down. How long have you been standing there?"' },
+          text: 'Please calm down, sir. How can we assist you?' },
         { character: 'Tourist',
           portrait: 'guy', side: 'left',
-          text: '"Since 10am! The square is completely full at noon — I need to know when to run!"' },
-        { character: 'Apprentice Gabriel',
+          text: 'I love this place, but these pigeons are just too much! I want to leave right before the whole piazza gets crowded by them, but I need to figure out exactly when that will happen!' },
+        { character: 'Gabriel',
           portrait: 'gabriel', side: 'right',
-          text: '"Each bird calls another and they arrive one per minute... this is a doubling problem!"' },
-        { character: 'Inspector Dasha',
-          portrait: 'dasha', side: 'right',
-          text: '"Precisely. Gabriel — if the square is full at 12:00, when is it half full?"' },
+          text: 'You know, this exact situation reminds me of a puzzle...' },
       ], () => Puzzle2Pigeons.open());
     });
   },
@@ -311,10 +308,16 @@ const Scene2StMarco = {
     DialogueEngine.start([
       { character: 'Gabriel',
         portrait: 'gabriel', side: 'right',
-        text: '"Inspector, I think this dog is also investigating something."' },
+        text: 'Aww what a cutiieeeeee. Look at him!' },
       { character: 'Dasha',
         portrait: 'dasha', side: 'right',
-        text: '"Leave it to Venice to have its own detective dog."' },
+        text: 'I have to say that I may like this city... They even have dog detectives... He is investigating the piazza!' },
+      { character: 'Gabriel',
+        portrait: 'gabriel', side: 'right',
+        text: 'I think he lost focus because of all these pigeons haha' },
+      { character: 'Dog',
+        side: 'left',
+        text: 'rawf! *fakin pigey*, probably' },
     ], () => { });
   },
 
@@ -324,80 +327,86 @@ const Scene2StMarco = {
     DialogueEngine.start([
       { character: '???',
         portrait: 'carnival', side: 'left',
-        text: '"Brava, Detectives. Most impressive."' },
-      { character: 'Inspector Dasha',
+        text: 'Brava, Detectives. Most impressive.' },
+      { character: 'Dasha',
         portrait: 'dasha', side: 'right',
-        text: '"Who are you?"' },
+        text: 'Who are you?' },
       { character: '???',
         portrait: 'carnival', side: 'left',
-        text: '"A friend. I have been watching your deductions with great interest."' },
+        text: 'A friend. I have been watching your deductions with great interest.' },
       { character: '???',
         portrait: 'carnival', side: 'left',
-        text: '"Consider this a gift. It will show you exactly where your next adventure begins."' },
-      { character: 'Apprentice Gabriel',
+        text: 'Consider this a gift. It will show you exactly where your next adventure begins.' },
+      { character: 'Gabriel',
         portrait: 'gabriel', side: 'right',
-        text: '"A... map?"' },
+        text: 'A... map?' },
       { character: '???',
         portrait: 'carnival', side: 'left',
-        text: '"Buona fortuna, Ispettore."' },
+        text: 'Buona fortuna, Ispettore.' },
     ], () => Puzzle3Map.open());
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // PUZZLE CALLBACKS
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   onPigeonsSolved() {
-    DialogueEngine.start([
-      { character: 'Tourist',
-        portrait: 'guy', side: 'left',
-        text: '"11:59?! I have been here since 10am for THIS?! I need to leave NOW!"' },
-      { character: 'Inspector Dasha',
-        portrait: 'dasha', side: 'right',
-        text: '"Run, sir. Run now."' },
-      { character: 'Apprentice Gabriel',
-        portrait: 'gabriel', side: 'right',
-        text: '"Inspector... there is someone watching us from the far end of the square."' },
-    ], () => {
-      GameState.puzzlesSolved.p2 = true;
+    SceneManager.goTo(
+      'screen-scene',
+      () => {
+        DialogueEngine.start([
+          { character: 'Tourist',
+            portrait: 'guy', side: 'left',
+            text: '11:59... Oh Shit! I have to go!!!! Thaaaaaank yooouuuuu' },
+          { character: 'Dasha',
+            portrait: 'dasha', side: 'right',
+            text: 'Look at him go hehe' },
+          { character: 'Gabriel',
+            portrait: 'gabriel', side: 'right',
+            text: 'Inspector, someone is getting close to us, watch out!' },
+        ], () => {
+          GameState.puzzlesSolved.p2 = true;
 
-      // Kill animation and remove tourist sprite
-      const tourist = document.getElementById('sprite-tourist');
-      if (tourist) {
-        if (tourist._animTimer) clearInterval(tourist._animTimer);
-        gsap.to(tourist, {
-          opacity: 0, duration: 0.4,
-          onComplete: () => tourist.remove(),
+          // Kill animation and remove tourist sprite
+          const tourist = document.getElementById('sprite-tourist');
+          if (tourist) {
+            if (tourist._animTimer) clearInterval(tourist._animTimer);
+            gsap.to(tourist, {
+              opacity: 0, duration: 0.4,
+              onComplete: () => tourist.remove(),
+            });
+          }
+
+          // Remove tourist click zone
+          const zone = document.getElementById('zone-tourist');
+          if (zone) zone.remove();
+
+          // Spawn carnival
+          const container = document.getElementById('scene-sprites');
+          this._spawnCarnival(container);
         });
-      }
-
-      // Remove tourist click zone
-      const zone = document.getElementById('zone-tourist');
-      if (zone) zone.remove();
-
-      // Spawn carnival
-      const container = document.getElementById('scene-sprites');
-      this._spawnCarnival(container);
-    });
+      },
+      'assets/backgrounds/smbg.png'
+    );
   },
 
   onMapSolved() {
     DialogueEngine.start([
-      { character: 'Inspector Dasha',
+      { character: 'Dasha',
         portrait: 'dasha', side: 'right',
-        text: '"Mestre. Of course — just across the Ponte della Libertà."' },
-      { character: 'Apprentice Gabriel',
+        text: 'Mestre. Of course, just across the Ponte della Libertà.' },
+      { character: 'Gabriel',
         portrait: 'gabriel', side: 'right',
-        text: '"La Tana di Oberix... do you know it, Inspector?"' },
-      { character: 'Inspector Dasha',
+        text: 'This destination... It reminds me of something.' },
+      { character: 'Dasha',
         portrait: 'dasha', side: 'right',
-        text: '"I know we need to take the train. Come on, Detective."' },
+        text: 'I know we need to take the train. Come on, Detective.' },
     ], () => this._trainTransition());
   },
 
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
   // TRAIN TRANSITION
-  // ══════════════════════════════════════════════════════════════════
+  // ==================================================================
 
   _trainTransition() {
     document.getElementById('scene-sprites').innerHTML  = '';
@@ -416,18 +425,18 @@ const Scene2StMarco = {
           gsap.to(bgEl, {
             opacity: 1, duration: 0.6,
             onComplete: () => {
-              this._showLocationTag('Venice → Mestre — On the Train');
+              this._showLocationTag('Venice to Mestre - On the Train');
               setTimeout(() => {
                 DialogueEngine.start([
-                  { character: 'Apprentice Gabriel',
+                  { character: 'Gabriel',
                     portrait: 'gabriel', side: 'right',
-                    text: '"I still cannot believe we are working on your birthday trip."' },
-                  { character: 'Inspector Dasha',
+                    text: 'I still cannot believe we are working on your birthday trip.' },
+                  { character: 'Dasha',
                     portrait: 'dasha', side: 'right',
-                    text: '"We are not working. We are having an adventure. There is a difference."' },
-                  { character: 'Apprentice Gabriel',
+                    text: 'We are not working. We are having an adventure. There is a difference.' },
+                  { character: 'Gabriel',
                     portrait: 'gabriel', side: 'right',
-                    text: '"Of course, Inspector."' },
+                    text: 'Of course, Inspector.' },
                 ], () => setTimeout(() => Scene3Restaurant.init(), 1000));
               }, 800);
             },

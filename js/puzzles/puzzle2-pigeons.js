@@ -1,8 +1,8 @@
 /**
- * Puzzle 2 — The Pigeon Hour
+ * Puzzle 2: Pigeon O'clock
  *
  * The square fills completely with pigeons at 12:00.
- * The population doubles every minute.
+ * After arriving, each pigeon calls for its closest friend, who always arrives in exactly 1 minute.
  * At what time is the square HALF full?
  * Answer: 11:59
  */
@@ -18,7 +18,7 @@ const Puzzle2Pigeons = {
     PuzzleShell.open({
       id: 'p2',
       number: '02',
-      title: "The Pigeon's Hour",
+      title: "Pigeon O'clock",
       layout: 'fullscreen',
       description: '',
       hints: [
@@ -296,7 +296,6 @@ const Puzzle2Pigeons = {
                 <div class="p2-hint-tracker" id="p2-hint-tracker">
                   <span class="p2-hint-box p2-hint-box-available" data-hint="0">1</span>
                   <span class="p2-hint-box p2-hint-box-available" data-hint="1">2</span>
-                  <span class="p2-hint-box p2-hint-box-available" data-hint="2">3</span>
                 </div>
               </button>
 
@@ -310,13 +309,13 @@ const Puzzle2Pigeons = {
         <div id="p2-sidebar">
           <div id="p2-sidebar-header">
             <div id="p2-sidebar-number">Puzzle 02</div>
-            <div id="p2-sidebar-title">The Pigeon's Hour</div>
+            <div id="p2-sidebar-title">Pigeon O'clock</div>
           </div>
 
           <div id="p2-sidebar-body">
             <div id="p2-rules">
               <p>Every day, pigeons arrive at <strong>Piazza San Marco</strong>.</p>
-              <p>Each pigeon brings a friend exactly one minute later, and the flock doubles every minute.</p>
+              <p>After arriving, each pigeon calls for its closest friend, who always arrives in exactly 1 minute.</p>
               <p>At <strong>12:00</strong>, the square is completely full. When should the tourist leave if he wants to flee when the square is only <strong>half full</strong>?</p>
             </div>
 
@@ -325,7 +324,7 @@ const Puzzle2Pigeons = {
             </div>
 
             <div id="p2-hint-area">
-              <div id="p2-hint-text">Use your hint coins carefully — each hint reveals the next step.</div>
+              <div id="p2-hint-text">Use your hint coins carefully... each hint reveals the next step.</div>
               <button id="p2-submit-btn" class="p2-btn p2-btn-teal"><span class="btn-text" data-text="SUBMIT">SUBMIT</span></button>
             </div>
           </div>
@@ -356,12 +355,12 @@ const Puzzle2Pigeons = {
     });
 
     container.querySelector('#p2-btn-hints').addEventListener('click', () => {
-      if (this._hintUsed >= 3) return;
+      if (this._hintUsed >= 2) return;
       if (!GameState.spendHintCoin()) return;
       const hintText = container.querySelector('#p2-hint-text');
       hintText.textContent = this._hintUsed === 0
-        ? 'Think backwards from 12:00. If the flock doubles each minute, the half-full point is one minute earlier.'
-        : 'The square is half full exactly one step before it becomes completely full.';
+        ? 'Since all pigeons call a friend this is effectively a doubling problem.'
+        : 'Think backwards from 12:00. If the flock doubles each minute, when was it half-full?';
       const box = container.querySelector(`[data-hint="${this._hintUsed}"]`);
       if (box) {
         box.classList.remove('p2-hint-box-available');
