@@ -394,13 +394,7 @@ const Scene2StMarco = {
     DialogueEngine.start([
       { character: 'Dasha',
         portrait: 'dasha', side: 'right',
-        text: 'Mestre. Of course, just across the Ponte della Libertà.' },
-      { character: 'Gabriel',
-        portrait: 'gabriel', side: 'right',
-        text: 'This destination... It reminds me of something.' },
-      { character: 'Dasha',
-        portrait: 'dasha', side: 'right',
-        text: 'I know we need to take the train. Come on, Detective.' },
+        text: "Mestre. Of course, just across the Ponte della Libertà. Let's jump on the train!" },
     ], () => this._trainTransition());
   },
 
@@ -409,41 +403,46 @@ const Scene2StMarco = {
   // ==================================================================
 
   _trainTransition() {
-    document.getElementById('scene-sprites').innerHTML  = '';
-    document.getElementById('scene-hotspots').innerHTML = '';
-    gsap.to('#scene-location-tag', { opacity: 0, duration: 0.3 });
+    SceneManager.goTo(
+      'screen-scene',
+      () => {
+        document.getElementById('scene-sprites').innerHTML  = '';
+        document.getElementById('scene-hotspots').innerHTML = '';
+        gsap.to('#scene-location-tag', { opacity: 0, duration: 0.3 });
 
-    const trainSrc = 'assets/backgrounds/transition-train.jpg';
-    const img      = new Image();
+        const trainSrc = 'assets/backgrounds/transition-train.png';
+        const img      = new Image();
 
-    img.onload = img.onerror = () => {
-      const bgEl = document.getElementById('scene-background');
-      gsap.to(bgEl, {
-        opacity: 0, duration: 0.5,
-        onComplete: () => {
-          bgEl.src = trainSrc;
+        img.onload = img.onerror = () => {
+          const bgEl = document.getElementById('scene-background');
           gsap.to(bgEl, {
-            opacity: 1, duration: 0.6,
+            opacity: 0, duration: 0.45,
             onComplete: () => {
-              this._showLocationTag('Venice to Mestre - On the Train');
-              setTimeout(() => {
-                DialogueEngine.start([
-                  { character: 'Gabriel',
-                    portrait: 'gabriel', side: 'right',
-                    text: 'I still cannot believe we are working on your birthday trip.' },
-                  { character: 'Dasha',
-                    portrait: 'dasha', side: 'right',
-                    text: 'We are not working. We are having an adventure. There is a difference.' },
-                  { character: 'Gabriel',
-                    portrait: 'gabriel', side: 'right',
-                    text: 'Of course, Inspector.' },
-                ], () => setTimeout(() => Scene3Restaurant.init(), 1000));
-              }, 800);
+              bgEl.src = trainSrc;
+              gsap.to(bgEl, {
+                opacity: 1, duration: 0.6,
+                onComplete: () => {
+                  this._showLocationTag('Venice to Mestre - On the Train');
+                  setTimeout(() => {
+                    DialogueEngine.start([
+                      { character: 'Gabriel',
+                        portrait: 'gabriel', side: 'right',
+                        text: 'I still cannot believe we are working on your birthday trip.' },
+                      { character: 'Dasha',
+                        portrait: 'dasha', side: 'right',
+                        text: 'We are not working. We are having an adventure. There is a difference.' },
+                      { character: 'Gabriel',
+                        portrait: 'gabriel', side: 'right',
+                        text: 'Of course, Inspector.' },
+                    ], () => setTimeout(() => Scene3Restaurant.init(), 1000));
+                  }, 800);
+                },
+              });
             },
           });
-        },
-      });
-    };
-    img.src = trainSrc;
+        };
+        img.src = trainSrc;
+      }
+    );
   },
 };

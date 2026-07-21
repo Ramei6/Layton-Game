@@ -138,6 +138,16 @@
 
   <!-- GSAP (animation library) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>window.addEventListener('error', (e) => {
+  if (e.target && e.target.tagName === 'IMG') {
+    console.error('BROKEN IMAGE:', {
+      src: e.target.src,
+      id: e.target.id,
+      class: e.target.className,
+      time: performance.now().toFixed(0) + 'ms'
+    });
+  }
+}, true);</script>
 
   <!-- Load order matters: dependencies first -->
   <script src="js/state.js"></script>

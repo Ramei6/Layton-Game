@@ -33,13 +33,19 @@ const DialogueEngine = {
     this._index      = 0;
     this._onComplete = onComplete;
 
-    const overlay          = document.getElementById('dialogue-overlay');
+    const overlay           = document.getElementById('dialogue-overlay');
     const portraitContainer = document.getElementById('dialogue-portrait-container');
 
     // Reset portrait
+    // NOTE: use removeAttribute('src') instead of src = '' — an empty string
+    // resolves as a relative URL against the current document, causing the
+    // browser to re-request the page itself as an "image" and fire a 404/
+    // broken-image error. removeAttribute fully detaches the image with no
+    // network request at all.
     portraitContainer.style.display = 'none';
-    document.getElementById('dialogue-portrait-img').src       = '';
-    document.getElementById('dialogue-portrait-img').className = '';
+    const resetPortraitImg = document.getElementById('dialogue-portrait-img');
+    resetPortraitImg.removeAttribute('src');
+    resetPortraitImg.className = '';
 
     // Show cat companion if cat was found
     if (GameState.catFound) {
@@ -70,41 +76,41 @@ const DialogueEngine = {
     textEl.textContent = '';
 
     // ── Portrait ──
-const portraitContainer = document.getElementById('dialogue-portrait-container');
-const portraitImg       = document.getElementById('dialogue-portrait-img');
+    const portraitContainer = document.getElementById('dialogue-portrait-container');
+    const portraitImg       = document.getElementById('dialogue-portrait-img');
 
-if (line.portrait) {
+    if (line.portrait) {
 
-    // 1. Hide immediately — prevents the old portrait from flipping
-    portraitImg.style.opacity = '0';
+      // 1. Hide immediately — prevents the old portrait from flipping
+      portraitImg.style.opacity = '0';
 
-    // 2. Apply mirroring class BEFORE src — class now targets a blank/hidden img
-    portraitImg.className = this.MIRRORED_PORTRAITS.has(line.portrait)
-      ? 'mirrored'
-      : '';
+      // 2. Apply mirroring class BEFORE src — class now targets a blank/hidden img
+      portraitImg.className = this.MIRRORED_PORTRAITS.has(line.portrait)
+        ? 'mirrored'
+        : '';
 
-    // 3. Set new source
-    portraitImg.src = `assets/characters/${line.portrait}-talk.png`;
-    
-    // 4. Reveal only once the new image has actually loaded
-    portraitImg.onload = () => {
-      gsap.to(portraitImg, { opacity: 1, duration: 0.12, ease: 'none' });
-    };
+      // 3. Set new source
+      portraitImg.src = `assets/characters/${line.portrait}-talk.png`;
 
-    // Show container with slide-in on first appearance
-    if (portraitContainer.style.display === 'none') {
-      portraitContainer.style.display = 'block';
-      gsap.from(portraitContainer, {
-        y: -20, opacity: 0, duration: 0.3, ease: 'power2.out',
-      });
+      // 4. Reveal only once the new image has actually loaded
+      portraitImg.onload = () => {
+        gsap.to(portraitImg, { opacity: 1, duration: 0.12, ease: 'none' });
+      };
+
+      // Show container with slide-in on first appearance
+      if (portraitContainer.style.display === 'none') {
+        portraitContainer.style.display = 'block';
+        gsap.from(portraitContainer, {
+          y: -20, opacity: 0, duration: 0.3, ease: 'power2.out',
+        });
+      }
+
+      this._startTalkAnim(line.portrait);
+
+    } else {
+      portraitContainer.style.display = 'none';
+      this._stopTalkAnim(null);
     }
-
-    this._startTalkAnim(line.portrait);
-
-  } else {
-    portraitContainer.style.display = 'none';
-    this._stopTalkAnim(null);
-  }
 
     // ── Typewriter ──
     this._isTyping = true;
@@ -186,10 +192,11 @@ if (line.portrait) {
         overlay.style.display = 'none';
 
         // Reset portrait
+        // Same fix as in start(): removeAttribute('src') instead of src = ''.
         const portraitContainer = document.getElementById('dialogue-portrait-container');
         const portraitImg       = document.getElementById('dialogue-portrait-img');
         portraitContainer.style.display = 'none';
-        portraitImg.src       = '';
+        portraitImg.removeAttribute('src');
         portraitImg.className = '';
 
         // Reset other UI
