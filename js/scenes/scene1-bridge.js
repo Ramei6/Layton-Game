@@ -36,7 +36,7 @@ const Scene1Bridge = {
     // ── Grandma zone ────────────────────────────────────────────────
     if (!GameState.puzzlesSolved.p1) {
       const z = makeZone('zone-grandma', {
-        left: '550px', top: '220px', width: '95px', height: '195px',
+        left: '475px', top: '220px', width: '95px', height: '195px',
       }, '255,0,0');
       z.addEventListener('click', () => this._onGrandmaClick());
       container.appendChild(z);
@@ -45,7 +45,7 @@ const Scene1Bridge = {
     // ── Kids zone ───────────────────────────────────────────────────
     if (!GameState.puzzlesSolved.p1) {
       const z = makeZone('zone-kids', {
-        left: '845px', top: '295px', width: '195px', height: '175px',
+        left: '725px', top: '295px', width: '160px', height: '175px',
       }, '255,0,0');
       z.addEventListener('click', () => this._onKidsClick());
       container.appendChild(z);
@@ -53,7 +53,7 @@ const Scene1Bridge = {
 
     // ── Gondola zone ────────────────────────────────────────────────
     const gz = makeZone('zone-gondola', {
-      left:   '810px',
+      left:   '700px',
       top:    '205px',
       width:  '190px',
       height: '115px',
@@ -72,9 +72,9 @@ const Scene1Bridge = {
     container.innerHTML = '';
 
     const coins = [
-      { id: 'scene1-coin1', style: { top: '175px', left: '715px' } },
-      { id: 'scene1-coin2', style: { top: '130px', left: '20px'  } },
-      { id: 'scene1-coin3', style: { top: '50px',  left: '1050px'} },
+      { id: 'scene1-coin1', style: { top: '165px', left: '0px' } },
+      { id: 'scene1-coin2', style: { top: '195px', left: '610px'  } },
+      { id: 'scene1-coin3', style: { top: '100px',  left: '900px'} },
     ];
 
     coins.forEach(({ id, style }) => {
