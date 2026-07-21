@@ -53,7 +53,7 @@ document.getElementById('game-container').addEventListener('click', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-  if (e.key === 'c' || e.key === 'C') {
+  if (e.key === 'r' || e.key === 'r') {
     const text = `left: ${_lastCoords.x}px; top: ${_lastCoords.y}px;`;
     navigator.clipboard.writeText(text).then(() => {
 
