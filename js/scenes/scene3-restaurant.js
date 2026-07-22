@@ -8,33 +8,33 @@ const Scene3Restaurant = {
       () => {
         this._setupSprites();
         this._setupHotspots();
-        this._showLocationTag('Mestre — La Tana di Oberix');
+        this._showLocationTag('Mestre - La Tana di Oberix');
       },
       'assets/backgrounds/scene3-restaurant.png'
     );
   },
 
   // ==================================================================
-  // ZONES — clears #scene-sprites (only place that does), then appends
+  // ZONES - clears #scene-sprites (only place that does), then appends
   // ==================================================================
 
-SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom exact
+  SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // confirme le nom exact
 
   // Rectangles de recadrage dans l'image source (pixels réels du PNG)
   FRAMES: [
-      { x: 30,  y: 275,  w: 656, h: 910  },  // frame 0 — déguisé
-      { x: 837, y: 261,  w: 918, h: 929  },  // frame 1 — mi-révélation
-      { x: 440, y: 1272, w: 882, h: 1086 },  // frame 2 — Oberix révélé
+      { x: 30,  y: 275,  w: 656, h: 910  },  // frame 0 - déguisé
+      { x: 837, y: 261,  w: 918, h: 929  },  // frame 1 - mi-révélation
+      { x: 440, y: 1272, w: 882, h: 1086 },  // frame 2 - Oberix révélé
     ],
 
   // Échelle unique appliquée aux 3 frames (garde leurs proportions relatives
-  // intactes — ne PAS normaliser chaque frame à la même hauteur, sinon le
+  // intactes - ne PAS normaliser chaque frame à la même hauteur, sinon le
   // personnage "grossit" bizarrement entre les frames)
-  DISPLAY_SCALE: 0.24, // ← à ajuster : 240 / 640 (hauteur frame 0 ≈ ancien scene-carnival.png)
+  DISPLAY_SCALE: 0.42, // à ajuster : 240 / 640 (hauteur frame 0 ≈ ancien scene-carnival.png)
 
   // Clears #scene-sprites (only place that does), builds the sprite, then
   // hands off to _setupZones() to append the click zone on top.
-// Construit le sprite + la zone. Vide #scene-sprites (seul endroit qui le fait).
+  // Construit le sprite + la zone. Vide #scene-sprites (seul endroit qui le fait).
   _setupSprites() {
     const container = document.getElementById('scene-sprites');
     container.innerHTML = '';
@@ -57,7 +57,12 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
     const sheet = document.createElement('img');
     sheet.id  = 'sprite-oberix-sheet';
     sheet.src = this.SHEET_SRC;
-    Object.assign(sheet.style, { position: 'absolute', top: '0', left: '0' });
+    Object.assign(sheet.style, { 
+      position: 'absolute', 
+      top: '0', 
+      left: '0', 
+      pointerEvents: 'none'   // ajouté : empêche l'img de capter les clics 
+    });
 
     sheet.onload = () => {
       const s = this.DISPLAY_SCALE;
@@ -101,8 +106,8 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
     return this._ZONE.top + this._ZONE.height;
   },
 
-  // Mêmes coords que zone-chef — recalibre les deux ensemble.
-  _ZONE: { left: 540, top: 260, width: 150, height: 300 }, // ← PLACEHOLDER
+  // Mêmes coords que zone-chef - recalibre les deux ensemble.
+  _ZONE: { left: 719, top: 282.5, width: 245, height: 353.5 },
 
   _setupZones(container) {
     const makeZone = (id, style, color) => {
@@ -124,6 +129,7 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
         top:    this._ZONE.top    + 'px',
         width:  this._ZONE.width  + 'px',
         height: this._ZONE.height + 'px',
+        zIndex: '20',   // ajouté : passe au-dessus du sprite (z-index:8)
       }, '255,140,0');
       z.addEventListener('click', () => this._onChefClick());
       container.appendChild(z);
@@ -138,11 +144,8 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
     }, 600);
   },
 
-
-
-
   // ==================================================================
-  // HINT COINS — #scene-hotspots only
+  // HINT COINS - #scene-hotspots only
   // ==================================================================
 
   _setupHotspots() {
@@ -150,9 +153,9 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
     container.innerHTML = '';
 
     const coins = [
-      { id: 'scene3-coin1', style: { top: '202px', left: '439px'  } },  
-      { id: 'scene3-coin2', style: { top: '544px', left: '1172px' } },
-      { id: 'scene3-coin3', style: { top: '600px',  left: '235px' } },
+      { id: 'scene3-coin1', style: { top: '16px',  left: '424px'  } },
+      { id: 'scene3-coin2', style: { top: '351px', left: '1148px' } },
+      { id: 'scene3-coin3', style: { top: '214px', left: '790px'  } },
     ];
 
     coins.forEach(({ id, style }) => {
@@ -209,7 +212,7 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
   },
 
   // ==================================================================
-  // EXCLAMATION MARK — same pattern as scene1 / scene2
+  // EXCLAMATION MARK - same pattern as scene1 / scene2
   // ==================================================================
 
   _showExclamation(onComplete) {
@@ -217,7 +220,7 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
     el.id = 'exclamation-mark-chef';
     Object.assign(el.style, {
       position:       'absolute',
-      left:           '600px', top: '220px',   // ← PLACEHOLDER, above chef zone
+      left:           '600px', top: '220px',   // PLACEHOLDER, above chef zone
       width:          '38px',
       height:         '38px',
       borderRadius:   '50%',
@@ -258,7 +261,7 @@ SHEET_SRC: 'assets/sprites/scene-carnival-transform.png', // ← confirme le nom
   // CLICK HANDLERS
   // ==================================================================
 
-_onChefClick() {
+  _onChefClick() {
     if (GameState.puzzlesSolved.p4 || this._revealing) return;
     this._revealing = true;
 
@@ -267,15 +270,17 @@ _onChefClick() {
         this._revealing = false;
         DialogueEngine.start([
           { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-            text: 'Mamma mia! You must help me! My ancestor, the great Oberix, left me his sacred recipe!' },
-          { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-            text: 'But it is all scrambled! I cannot read the order! Tonight is the anniversary dinner — I am ruined!' },
+            text: 'Mamma mia, please forgive the theatrics! I am Chef Oberix, and this is my restaurant. I had to lure you all the way from San Marco to Mestre to be absolutely certain you were the master detectives the rumors spoke of!' },
           { character: 'Dasha', portrait: 'dasha', side: 'right',
-            text: 'Let us see it. Gabriel, take notes.' },
-          { character: 'Gabriel', portrait: 'gabriel', side: 'right',
-            text: 'On it, Inspector.' },
+            text: 'You went through all that trouble and wore a mask just to test us?' },
           { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-            text: 'Please, Detectives — the honour of the Oberix name depends on you!' },
+            text: 'I needed minds sharp enough to solve the impossible. Tonight is the most important dinner of my life, but my ancestor\'s sacred recipe is completely scrambled. It is locked behind a culinary riddle I simply cannot decipher.' },
+          { character: 'Chef Oberix', portrait: 'chef', side: 'left',
+            text: 'Please, if you do not help me order these ingredients, my family legacy is ruined!' }, 
+          { character: 'Dasha', portrait: 'dasha', side: 'right',
+            text: 'A historical riddle hidden in a family recipe? Now that is a mystery I cannot refuse. Gabriel, prepare to take notes.' },
+          { character: 'Gabriel', portrait: 'gabriel', side: 'right',
+            text: 'I am ready when you are, Inspector.' },
         ], () => Puzzle4Recipe.open());
       };
 
@@ -286,7 +291,6 @@ _onChefClick() {
     });
   },
 
-
   // ==================================================================
   // PUZZLE CALLBACK
   // ==================================================================
@@ -294,25 +298,39 @@ _onChefClick() {
   onRecipeSolved() {
     GameState.puzzlesSolved.p4 = true;
 
-    DialogueEngine.start([
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: 'Perfetto! PERFETTO! That is exactly it! You have saved the Oberix legacy!' },
-      { character: 'Dasha', portrait: 'dasha', side: 'right',
-        text: 'Our pleasure. Good luck tonight, Chef.' },
-      { character: 'Chef Oberix', portrait: 'chef', side: 'left',
-        text: 'Please — stay! Eat! It is all on the house!' },
-      { character: 'Gabriel', portrait: 'gabriel', side: 'right',
-        text: 'Inspector... I think I have a confession to make.' },
-      { character: 'Dasha', portrait: 'dasha', side: 'right',
-        text: 'Oh?' },
-      { character: 'Gabriel', portrait: 'gabriel', side: 'right',
-        text: 'The bridge. The pigeons. The map. The recipe. I... may have arranged all of it.' },
-      { character: 'Dasha', portrait: 'dasha', side: 'right',
-        text: '...You organised all of this. For me.' },
-      { character: 'Gabriel', portrait: 'gabriel', side: 'right',
-        text: 'Happy Birthday, Inspector. You deserve every mystery.' },
-    ], () => {
-      setTimeout(() => SceneEnd.init(), 800);
-    });
+    // Return to the restaurant scene FIRST, then play the closing dialogue -
+    // same pattern as Scene1Bridge.onPuzzleSolved / Scene2StMarco.onPigeonsSolved
+    SceneManager.goTo(
+      'screen-scene',
+      () => {
+        this._setupSprites();   // chef zone now hidden (p4 solved), sprite stays on revealed frame
+        this._setupHotspots();
+        this._showLocationTag('Mestre - La Tana di Oberix');
+
+        DialogueEngine.start([
+          { character: 'Chef Oberix', portrait: 'chef', side: 'left',
+            text: 'Perfetto! The exact order! The Oberix legacy is saved!' },
+          { character: 'Dasha', portrait: 'dasha', side: 'right',
+            text: 'It was a wonderfully crafted riddle, Chef. We are glad to help.' },
+          { character: 'Chef Oberix', portrait: 'chef', side: 'left',
+            text: 'You must stay! A grand feast for my saviors, completely on the house! But before we eat... Gabriel, my friend, do you not have something important to confess to the Inspector?' },
+          { character: 'Dasha', portrait: 'dasha', side: 'right',
+            text: 'A confession? Gabriel, what is he talking about?' },
+          { character: 'Gabriel', portrait: 'gabriel', side: 'right',
+            text: 'Haha, well... surprise? The truth is, Inspector, none of this was a coincidence.' },
+          { character: 'Dasha', portrait: 'dasha', side: 'right',
+            text: 'What do you mean?' },
+          { character: 'Gabriel', portrait: 'gabriel', side: 'right',
+            text: 'I organized this entire day from scratch. I paid the workers to put up those closed signs on the bridge. I hired the actor to get swarmed by pigeons in the piazza. I even asked Chef Oberix here to dress up in that carnival mask, hand us the map, and lead us to Mestre.' },
+          { character: 'Dasha', portrait: 'dasha', side: 'right',
+            text: 'Wait, you planned this whole elaborate mystery... just for me?' },
+          { character: 'Gabriel', portrait: 'gabriel', side: 'right',
+            text: 'Every single puzzle, every clue, and every canal we crossed. Happy Birthday, Dasha. You are my absolute favorite detective, and you deserve the greatest adventure.' },
+        ], () => {
+          setTimeout(() => SceneEnd.init(), 800);
+        });
+      },
+      'assets/backgrounds/scene3-restaurant.png'
+    );
   },
 };

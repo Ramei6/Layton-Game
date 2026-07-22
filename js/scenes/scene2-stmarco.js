@@ -427,7 +427,7 @@ const Scene2StMarco = {
                     DialogueEngine.start([
                       { character: 'Gabriel',
                         portrait: 'gabriel', side: 'right',
-                        text: 'I still cannot believe we are working on your birthday trip.' },
+                        text: 'I still cannot believe we are working on a holiday...' },
                       { character: 'Dasha',
                         portrait: 'dasha', side: 'right',
                         text: 'We are not working. We are having an adventure. There is a difference.' },
@@ -465,7 +465,10 @@ const Scene2StMarco = {
                 DialogueEngine.start([
                   { character: 'Gabriel',
                     portrait: 'gabriel', side: 'right',
-                    text: 'Inspector, I saw something, follow me!' },
+                    text: 'Inspector, I saw someone moving!' },
+                  { character: 'Gabriel',
+                    portrait: 'gabriel', side: 'right',
+                    text: 'Please follow me!!' },
                 ], () => Scene3Restaurant.init());
               }, 400);
             },
