@@ -434,7 +434,7 @@ const Scene2StMarco = {
                       { character: 'Gabriel',
                         portrait: 'gabriel', side: 'right',
                         text: 'Of course, Inspector.' },
-                    ], () => setTimeout(() => Scene3Restaurant.init(), 1000));
+                    ], () => this._mestreArrival());
                   }, 800);
                 },
               });
@@ -444,5 +444,35 @@ const Scene2StMarco = {
         img.src = trainSrc;
       }
     );
+  },
+
+  // ── Mestre street — Gabriel spots something, leads to the restaurant ──
+  _mestreArrival() {
+    const bgEl     = document.getElementById('scene-background');
+    const streetSrc = 'assets/backgrounds/mestre-street.png'; // ← rename to your actual asset
+
+    const img = new Image();
+    img.onload = img.onerror = () => {
+      gsap.to(bgEl, {
+        opacity: 0, duration: 0.45,
+        onComplete: () => {
+          bgEl.src = streetSrc;
+          bgEl.classList.add('bg-center-full');
+          gsap.to(bgEl, {
+            opacity: 1, duration: 0.6,
+            onComplete: () => {
+              setTimeout(() => {
+                DialogueEngine.start([
+                  { character: 'Gabriel',
+                    portrait: 'gabriel', side: 'right',
+                    text: 'Inspector, I saw something, follow me!' },
+                ], () => Scene3Restaurant.init());
+              }, 400);
+            },
+          });
+        },
+      });
+    };
+    img.src = streetSrc;
   },
 };

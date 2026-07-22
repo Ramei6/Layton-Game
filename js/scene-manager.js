@@ -42,9 +42,14 @@ const SceneManager = {
 
       if (bgSrc) {
         const bgEl = document.getElementById('scene-background');
-        if (bgEl) bgEl.src = bgSrc;
+        if (bgEl) {
+          bgEl.src = bgSrc;
+          // Only these two backgrounds get full centering instead of top-crop
+          const centerFull = bgSrc.includes('scene3-restaurant')
+                           || bgSrc.includes('mestre-street');
+          bgEl.classList.toggle('bg-center-full', centerFull);
+        }
       }
-
       // ← was always 'block' — now uses flex for screens that need it
       target.style.display = flexScreens.includes(targetId) ? 'flex' : 'block';
 

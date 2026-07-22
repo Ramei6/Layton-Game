@@ -684,6 +684,13 @@ body {
   0%,  60%, 100% { opacity: 0; }
   30%            { opacity: 1; }
 }
+/* ////////////////////////////////////////////////////
+/* Override for specific scenes where top-crop would cut off the image
+   in an unwanted way. Toggled by JS per-background, see scene-manager.js
+   and scene2-stmarco.js _mestreArrival(). */
+#scene-background.bg-center-full {
+  object-position: center center;
+}
 
 /* ═══════════════════════════════
    PIXEL BUTTONS (shared, all puzzles)
