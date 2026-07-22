@@ -220,7 +220,7 @@ const Scene3Restaurant = {
     el.id = 'exclamation-mark-chef';
     Object.assign(el.style, {
       position:       'absolute',
-      left:           '600px', top: '220px',   // PLACEHOLDER, above chef zone
+      left:           '857px', top: '270px',   // PLACEHOLDER, above chef zone
       width:          '38px',
       height:         '38px',
       borderRadius:   '50%',

@@ -2,14 +2,14 @@
  * Puzzle 4: La Ricetta Sacra (The Sacred Recipe)
  *
  * 6 ingredient layers, randomised on open. Click one to select (highlight),
- * click another to swap positions. Correct order (bottom of dish → top):
+ * click another to swap positions. Correct order (bottom of dish -> top):
  *   focaccia, tomato_sauce, mozzarella, prosciutto, basil, olive_oil
  *
- * Display is REVERSED — top of screen = top of the dish, so the visual
+ * Display is REVERSED - top of screen = top of the dish, so the visual
  * stack reads top-to-bottom as: olive_oil, basil, prosciutto, mozzarella,
  * tomato_sauce, focaccia.
  *
- * Solvable from the clues alone — hints are optional scaffolding.
+ * Solvable from the clues alone - hints are optional scaffolding.
  */
 const Puzzle4Recipe = {
 
@@ -25,22 +25,19 @@ const Puzzle4Recipe = {
   // index 0 = bottom of dish, index 5 = top
   CORRECT_ORDER: ['focaccia', 'tomato_sauce', 'mozzarella', 'prosciutto', 'basil', 'olive_oil'],
 
-  CLUES: [
-    'La focaccia va sul fondo.',
-    'La salsa di pomodoro copre la base.',
-    'La mozzarella riposa tra la salsa e il prosciutto.',
-    'Il prosciutto non è sopra il basilico.',
-    'Il basilico corona il tutto.',
-    "L'olio d'oliva è l'ultimo tocco.",
+CLUES: [
+    'La terrena Focaccia sostiene il piatto dal fondo assoluto, mentre il dorato Olio d\'Oliva lo incorona sulla vetta suprema.',
+    'La candida Mozzarella riposa esattamente a metà strada tra le terrene fondamenta e il profumato Basilico.',
+    'La Salsa di Pomodoro e il Prosciutto si rifiutano di toccarsi.',
   ],
 
   HINTS: [
-    'Start with certainties: focaccia is the bottom layer, olive oil is the top.',
-    "Tomato sauce 'covers the base' — it sits directly above the focaccia.",
-    'Mozzarella sits between the tomato sauce and the prosciutto. Basil is second from the top.',
+    'The first clue gives you the absolute top and bottom layers. Place the Focaccia at layer one and the Olive Oil at layer six.',
+    'The Mozzarella is exactly halfway between layer one and the Basil. This means the Basil must be placed on an odd number to allow for a perfect middle.',
+    'If Basil was layer three, Mozzarella would be layer two, leaving layers four and five for the sauce and meat. But they refuse to touch! So Basil must be layer five, putting Mozzarella at layer three.',
   ],
 
-  _order:      [], // top-of-screen → bottom-of-screen, i.e. reversed CORRECT_ORDER when solved
+  _order:      [], // top-of-screen -> bottom-of-screen, i.e. reversed CORRECT_ORDER when solved
   _selected:   null,
   _hintsUsed:  0,
   _animating:  false,
@@ -115,7 +112,7 @@ const Puzzle4Recipe = {
         .p4-hint-box-available { background-color:#a8d5cf; }
         .p4-hint-box-used      { background-color:#f4ead5; }
 
-        /* ── The dish stack ─────────────────────────────────────────── */
+        /* -- The dish stack ------------------------------------------- */
         #p4-plate-shell {
           position:absolute; inset:0; display:flex; flex-direction:column;
           align-items:center; justify-content:center; gap:14px;
@@ -153,7 +150,7 @@ const Puzzle4Recipe = {
           color:#f5e8cc; text-align:center; min-height:18px; letter-spacing:0.5px;
         }
 
-        /* ── Sidebar (parchment, matches other puzzles) ───────────────── */
+        /* -- Sidebar (parchment, matches other puzzles) ----------------- */
         #p4-sidebar { flex:1; display:flex; flex-direction:column; height:100%; overflow:hidden; }
 
         #p4-sidebar-header {
@@ -240,9 +237,9 @@ const Puzzle4Recipe = {
           </div>
 
           <div id="p4-plate-shell">
-            <div id="p4-plate-label">Click one layer, then click another to swap them</div>
+            <div id="p4-plate-label">Select two ingredients to swap their positions</div>
             <div id="p4-stack"></div>
-            <div id="p4-status">Rebuild the dish from Oberix's scrambled notes.</div>
+            <div id="p4-status">Restore the sacred order of the Oberix family recipe.</div>
           </div>
         </div>
 
@@ -253,7 +250,7 @@ const Puzzle4Recipe = {
           </div>
 
           <div id="p4-sidebar-body">
-            <div id="p4-clues-title">Oberix's Scattered Notes</div>
+            <div id="p4-clues-title">The Scrambled Legacy of Chef Oberix</div>
             <div id="p4-clues">
               ${this.CLUES.map(c => `<div class="p4-clue">${c}</div>`).join('')}
             </div>
@@ -264,7 +261,7 @@ const Puzzle4Recipe = {
           </div>
 
           <div id="p4-sidebar-footer">
-            <button id="p4-submit">Submit Answer</button>
+            <button id="p4-submit">PRESENT THE RECIPE</button>
           </div>
         </div>
 
@@ -275,7 +272,7 @@ const Puzzle4Recipe = {
       if (this._animating) return;
       this._resetState();
       this._renderStack();
-      this._setStatus("Reset — Oberix's notes are scrambled again.");
+      this._setStatus("The ingredients are in disarray once more. We must focus.");
     });
 
     document.getElementById('p4-btn-quit').addEventListener('click', () => {
@@ -373,12 +370,12 @@ const Puzzle4Recipe = {
   _useHint() {
     if (this._hintsUsed >= this.HINTS.length) {
       this._shake('#p4-btn-hints');
-      this._setStatus('No more hints available!');
+      this._setStatus('We have exhausted our current leads. We must rely on pure deduction.');
       return;
     }
     if (!GameState.spendHintCoin()) {
       this._shake('#p4-btn-hints');
-      this._setStatus('No hint coins! Find them hidden in the scene.');
+      this._setStatus('We lack the hint coins for this insight. Let us search the restaurant again.');
       return;
     }
 
@@ -397,7 +394,7 @@ const Puzzle4Recipe = {
 
   _setStatus(msg) {
     const el = document.getElementById('p4-status');
-    if (el) el.textContent = msg || "Rebuild the dish from Oberix's scrambled notes.";
+    if (el) el.textContent = msg || "Restore the sacred order of the Oberix family recipe.";
   },
 
   _shake(selector) {
