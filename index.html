@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="assets/characters/dasha-idle.png">
 </head>
 <body>
-
+  <audio id="bg-music" src="assets/music/bgm.mp3" loop preload="auto"></audio>
   <div id="game-wrapper">
     <div id="game-container">
 
@@ -172,7 +172,23 @@
   <script src="js/scenes/scene-end.js"></script>
   <script src="js/debug-menu.js"></script>
 
+  <script>
+  (function () {
+    const music = document.getElementById('bg-music');
+    music.volume = 0.5; // adjust to taste
 
+    function startMusic() {
+      music.play().catch(() => {}); // ignore rejection, will retry on next interaction
+      window.removeEventListener('click', startMusic);
+      window.removeEventListener('keydown', startMusic);
+      window.removeEventListener('touchstart', startMusic);
+    }
+
+    window.addEventListener('click', startMusic);
+    window.addEventListener('keydown', startMusic);
+    window.addEventListener('touchstart', startMusic);
+  })();
+</script>
   <!-- Entry point: runs after all scripts loaded -->
   <script src="js/game.js"></script>
 
