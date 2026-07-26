@@ -315,7 +315,7 @@ const Puzzle2Pigeons = {
           <div id="p2-sidebar-body">
             <div id="p2-rules">
               <p>Every day, pigeons arrive at <strong>Piazza San Marco</strong>.</p>
-              <p>After arriving, each pigeon calls for its closest friend, who always arrives in exactly 1 minute.</p>
+              <p>Every Minute, each pigeon calls for his next best friend, who always arrives in exactly 1 minute.</p>
               <p>At <strong>12:00</strong>, the square is completely full. When should the tourist leave if he wants to flee when the square is only <strong>half full</strong>?</p>
             </div>
 
